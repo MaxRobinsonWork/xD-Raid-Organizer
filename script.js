@@ -707,69 +707,71 @@ async function fetchBosses(raidId, accessToken) {
    }
  }
  
- function renderBossInfo() {
-   const bossLootContainer = document.getElementById('boss-loot-container');
-   bossLootContainer.innerHTML = ''; // Clear existing content
- 
-   const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
- 
-   // Render each boss
-   bossData.forEach(boss => {
-     const bossSection = document.createElement('div');
-     bossSection.className = 'boss-section';
- 
-     // Boss header
-     const bossHeader = document.createElement('div');
-     bossHeader.className = 'boss-header';
-     bossHeader.innerHTML = `<h4>${boss.name}</h4>`;
-     bossSection.appendChild(bossHeader);
- 
-     // Boss loot table
-     const bossLoot = document.createElement('div');
-     bossLoot.className = 'boss-loot';
- 
-     if (boss.loot && boss.loot.length > 0) {
-       const table = document.createElement('table');
-       table.innerHTML = `
-         <thead>
-           <tr>
-             <th>Loot</th>
-             <th>Item Type</th>
-             <th>BiS For</th>
-           </tr>
-         </thead>
-         <tbody>
-           ${boss.loot.map(item => `
-             <tr>
-               <td>${item.item?.name || 'Unknown Item'}</td>
-               <td>${item.item?.type || 'N/A'}</td>
-               <td>${item.bisFor?.join(', ') || 'N/A'}</td>
-             </tr>
-           `).join('')}
-         </tbody>
-       `;
-       bossLoot.appendChild(table);
-     } else {
-       bossLoot.innerHTML = '<p>No loot data available.</p>';
-     }
- 
-     bossSection.appendChild(bossLoot);
-     bossLootContainer.appendChild(bossSection);
-   });
- 
-   // Add event listeners for expand/collapse
-   document.querySelectorAll('.boss-header').forEach(header => {
-     header.addEventListener('click', () => {
-       const bossSection = header.parentElement;
-       bossSection.classList.toggle('expanded');
-     });
-   });
- }
- 
- // Add event listener to the fetch button
- document.getElementById('fetch-boss-data-button').addEventListener('click', fetchAndSaveBossData);
- 
- // Load and render boss data on page load
- document.addEventListener('DOMContentLoaded', () => {
-   renderBossInfo();
- });
+function renderBossInfo() {
+  const bossLootContainer = document.getElementById('boss-loot-container');
+  bossLootContainer.innerHTML = ''; // Clear existing content
+
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
+  console.log('Boss Data:', bossData); // Log the bossData object
+
+  // Check if bossData has an "encounters" property
+  const encounters = bossData.encounters || bossData.instance?.encounters || [];
+  console.log('Encounters:', encounters);
+
+  if (encounters.length === 0) {
+    bossLootContainer.innerHTML = '<p>No boss data available.</p>';
+    return;
+  }
+
+  // Render each boss
+  encounters.forEach(boss => {
+    const bossSection = document.createElement('div');
+    bossSection.className = 'boss-section';
+
+    // Boss header
+    const bossHeader = document.createElement('div');
+    bossHeader.className = 'boss-header';
+    bossHeader.innerHTML = `<h4>${boss.name}</h4>`;
+    bossSection.appendChild(bossHeader);
+
+    // Boss loot table
+    const bossLoot = document.createElement('div');
+    bossLoot.className = 'boss-loot';
+
+    if (boss.items && boss.items.length > 0) {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Loot</th>
+            <th>Item Type</th>
+            <th>BiS For</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${boss.items.map(item => `
+            <tr>
+              <td>${item.item?.name || 'Unknown Item'}</td>
+              <td>${item.item?.type || 'N/A'}</td>
+              <td>${item.bisFor?.join(', ') || 'N/A'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      bossLoot.appendChild(table);
+    } else {
+      bossLoot.innerHTML = '<p>No loot data available.</p>';
+    }
+
+    bossSection.appendChild(bossLoot);
+    bossLootContainer.appendChild(bossSection);
+  });
+
+  // Add event listeners for expand/collapse
+  document.querySelectorAll('.boss-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const bossSection = header.parentElement;
+      bossSection.classList.toggle('expanded');
+    });
+  });
+}
