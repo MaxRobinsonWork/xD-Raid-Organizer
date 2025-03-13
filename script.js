@@ -585,15 +585,21 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-// Function to fetch raid data
 async function fetchRaidData(accessToken) {
-  const response = await fetch('https://us.api.blizzard.com/data/wow/raid/index?namespace=static-us&locale=en_US', {
+  const response = await fetch('https://us.api.blizzard.com/data/wow/journal-expansion/index?namespace=static-us&locale=en_US', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+  // Check if the response is OK (status code 200-299)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch raid data: ${response.status} ${response.statusText}`);
+  }
+
+  // Parse the response as JSON
   const data = await response.json();
-  return data.raids;
+  return data;
 }
 
 // Function to fetch boss data for a raid
@@ -621,22 +627,37 @@ async function fetchBossLoot(bossId, accessToken) {
 // Function to fetch and save boss data
 async function fetchAndSaveBossData() {
   try {
+    // Step 1: Fetch access token
     const accessToken = await getAccessToken();
-    const raids = await fetchRaidData(accessToken);
-    const currentRaid = raids[0]; // Assuming the first raid is the current one
-    const bosses = await fetchBosses(currentRaid.id, accessToken);
+    console.log('Access Token:', accessToken);
 
-    const bossData = [];
-    for (const boss of bosses) {
-      const loot = await fetchBossLoot(boss.id, accessToken);
-      bossData.push({ ...boss, loot });
+    // Step 2: Fetch raid data
+    const raidData = await fetchRaidData(accessToken);
+    console.log('Raid Data:', raidData);
+
+    // Step 3: Fetch boss data for the first raid
+    const currentRaid = raidData.tiers[0]; // Use the correct property for the raid
+    console.log('Current Raid:', currentRaid);
+
+    const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaid.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Check if the response is OK
+    if (!bossResponse.ok) {
+      throw new Error(`Failed to fetch boss data: ${bossResponse.status} ${bossResponse.statusText}`);
     }
 
-    // Save the data to localStorage
+    const bossData = await bossResponse.json();
+    console.log('Boss Data:', bossData);
+
+    // Step 4: Save boss data to localStorage
     localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossData));
     console.log('Boss data saved to localStorage');
 
-    // Render the data
+    // Step 5: Render the data
     renderBossInfo();
   } catch (error) {
     console.error('Error fetching boss data:', error);
