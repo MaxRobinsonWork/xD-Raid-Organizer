@@ -702,10 +702,20 @@ function renderBossInfo() {
   const bossLootContainer = document.getElementById('boss-loot-container');
   bossLootContainer.innerHTML = ''; // Clear existing content
 
-  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
+  console.log('Boss Data:', bossData); // Log the bossData object
+
+  // Check if bossData has an "encounters" property
+  const encounters = bossData.encounters || bossData.instance?.encounters || [];
+  console.log('Encounters:', encounters);
+
+  if (encounters.length === 0) {
+    bossLootContainer.innerHTML = '<p>No boss data available.</p>';
+    return;
+  }
 
   // Render each boss
-  bossData.forEach(boss => {
+  encounters.forEach(boss => {
     const bossSection = document.createElement('div');
     bossSection.className = 'boss-section';
 
@@ -719,7 +729,7 @@ function renderBossInfo() {
     const bossLoot = document.createElement('div');
     bossLoot.className = 'boss-loot';
 
-    if (boss.loot && boss.loot.length > 0) {
+    if (boss.items && boss.items.length > 0) {
       const table = document.createElement('table');
       table.innerHTML = `
         <thead>
@@ -730,7 +740,7 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.loot.map(item => `
+          ${boss.items.map(item => `
             <tr>
               <td>${item.item?.name || 'Unknown Item'}</td>
               <td>${item.item?.type || 'N/A'}</td>
