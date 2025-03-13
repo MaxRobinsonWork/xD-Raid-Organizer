@@ -614,17 +614,6 @@ async function fetchBosses(raidId, accessToken) {
 }
 
 // Function to fetch loot for a boss
-async function fetchBossLoot(bossId, accessToken) {
-  const response = await fetch(`https://us.api.blizzard.com/data/wow/boss/${bossId}?namespace=static-us&locale=en_US`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const data = await response.json();
-  return data.loot; // Assuming the API returns loot data
-}
-
-// Function to fetch and save boss data
 async function fetchAndSaveBossData() {
   try {
     // Step 1: Fetch access token
@@ -657,11 +646,33 @@ async function fetchAndSaveBossData() {
     const bossData = await bossResponse.json();
     console.log('Boss Data:', bossData);
 
-    // Step 5: Save boss data to localStorage
-    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossData));
+    // Step 5: Find the current raid tier (the last item in the raids array)
+    const currentRaidTier = bossData.raids[bossData.raids.length - 1];
+    if (!currentRaidTier) {
+      throw new Error('Current raid tier not found in boss data.');
+    }
+    console.log('Current Raid Tier:', currentRaidTier);
+
+    // Step 6: Fetch boss data for the current raid tier
+    const raidTierBossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaidTier.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Check if the response is OK
+    if (!raidTierBossResponse.ok) {
+      throw new Error(`Failed to fetch boss data for current raid tier: ${raidTierBossResponse.status} ${raidTierBossResponse.statusText}`);
+    }
+
+    const raidTierBossData = await raidTierBossResponse.json();
+    console.log('Current Raid Tier Boss Data:', raidTierBossData);
+
+    // Step 7: Save boss data to localStorage
+    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(raidTierBossData));
     console.log('Boss data saved to localStorage');
 
-    // Step 6: Render the data
+    // Step 8: Render the data
     renderBossInfo();
   } catch (error) {
     console.error('Error fetching boss data:', error);
@@ -674,8 +685,8 @@ function renderBossInfo() {
 
   const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
 
-  // Check if bossData has a "bosses" or "encounters" property
-  const bosses = bossData.encounters || bossData.bosses || [];
+  // Check if bossData has an "encounters" property (where bosses are stored)
+  const bosses = bossData.encounters || [];
   console.log('Bosses:', bosses);
 
   if (bosses.length === 0) {
@@ -698,7 +709,7 @@ function renderBossInfo() {
     const bossLoot = document.createElement('div');
     bossLoot.className = 'boss-loot';
 
-    if (boss.loot && boss.loot.length > 0) {
+    if (boss.items && boss.items.length > 0) {
       const table = document.createElement('table');
       table.innerHTML = `
         <thead>
@@ -709,7 +720,7 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.loot.map(item => `
+          ${boss.items.map(item => `
             <tr>
               <td>${item.name}</td>
               <td>${item.type}</td>
