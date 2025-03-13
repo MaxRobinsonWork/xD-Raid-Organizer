@@ -635,15 +635,15 @@ async function fetchAndSaveBossData() {
     const raidData = await fetchRaidData(accessToken);
     console.log('Raid Data:', raidData);
 
-    // Step 3: Find the current raid (e.g., "Current Season")
-    const currentRaid = raidData.tiers.find(tier => tier.name === 'Current Season');
+    // Step 3: Find the current raid (e.g., the last item in the tiers array)
+    const currentRaid = raidData.tiers[raidData.tiers.length - 1];
     if (!currentRaid) {
       throw new Error('Current raid not found in raid data.');
     }
     console.log('Current Raid:', currentRaid);
 
     // Step 4: Fetch boss data for the current raid
-    const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaid.id}?namespace=static-us&locale=en_US`, {
+    const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-expansion/${currentRaid.id}?namespace=static-us&locale=en_US`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
