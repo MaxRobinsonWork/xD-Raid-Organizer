@@ -591,13 +591,19 @@ async function getAccessToken() {
 
 // Function to fetch raid data
 async function fetchRaidData(accessToken) {
-  const response = await fetch('https://us.api.blizzard.com/data/wow/raid/index?namespace=static-us&locale=en_US', {
+  const response = await fetch('https://us.api.blizzard.com/data/wow/journal-expansion/index?namespace=static-us&locale=en_US', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+  // Check if the response is OK
+  if (!response.ok) {
+    throw new Error(`Failed to fetch raid data: ${response.status} ${response.statusText}`);
+  }
+
   const data = await response.json();
-  return data.raids;
+  return data;
 }
 
 // Function to fetch boss data for a raid
@@ -653,7 +659,7 @@ async function fetchAndSaveBossData() {
     }
 
     const bossData = await bossResponse.json();
-    console.log('Boss Data:', bossData); // Log the full boss data
+    console.log('Boss Data:', bossData);
 
     // Step 5: Find the current raid tier (the last item in the raids array)
     const currentRaidTier = bossData.raids[bossData.raids.length - 1];
