@@ -119,9 +119,16 @@ const classSpecs = {
   }
 };
 
+// Load environment variables from .env file
+dotenv.config();
+
 // Blizzard API credentials
-const CLIENT_ID = '1c3d4ca3eb544259ae2b902892d4f1c6'; // Replace with your Client ID
-const CLIENT_SECRET = 'tXVBRbipkKCeJZ8VijFM3JUQmlcl8Orz'; // Replace with your Client Secret
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error('Client ID or Client Secret is missing. Please check your .env file.');
+}
 
 // Array to store players
 let players = [];
