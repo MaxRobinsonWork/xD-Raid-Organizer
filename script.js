@@ -1,3 +1,11 @@
+// Blizzard API credentials
+const CLIENT_ID = 'your_client_id'; // Replace with your actual client ID
+const CLIENT_SECRET = 'your_client_secret'; // Replace with your actual client secret
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error('Client ID or Client Secret is missing. Please check your script.js file.');
+}
+
 // Object mapping classes to their specs, roles, tier tokens, and armor types
 const classSpecs = {
   "Death Knight": {
@@ -118,21 +126,6 @@ const classSpecs = {
     ]
   }
 };
-
-// script.js
-
-// Blizzard API credentials
-const CLIENT_ID = '1c3d4ca3eb544259ae2b902892d4f1c6'; // Replace with your Client ID
-const CLIENT_SECRET = 'tXVBRbipkKCeJZ8VijFM3JUQmlcl8Orz'; // Replace with your Client Secret
-
-if (!CLIENT_ID || !CLIENT_SECRET) {
-  console.error('Client ID or Client Secret is missing. Please check your script.js file.');
-}
-
-// Rest of your code...
-// Example usage
-console.log('Client ID:', CLIENT_ID);
-console.log('Client Secret:', CLIENT_SECRET);
 
 // Array to store players
 let players = [];
@@ -537,16 +530,8 @@ document.querySelectorAll('.tab-button').forEach(button => {
 // Function to populate boss categories with players
 function populateBossCategories() {
   const bosses = document.querySelectorAll('.boss');
-  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
 
-  // Get the current raid tier's boss names
-  const currentBosses = bossData.encounters || [];
-  console.log('Current Bosses:', currentBosses);
-
-  bosses.forEach((boss, index) => {
-    const bossName = currentBosses[index]?.name || `Boss ${index + 1}`;
-    boss.querySelector('h4').textContent = bossName;
-
+  bosses.forEach(boss => {
     const categories = boss.querySelector('.categories');
     const meleeCategory = categories.children[0];
     const rangedCategory = categories.children[1];
@@ -604,21 +589,15 @@ async function getAccessToken() {
   return data.access_token;
 }
 
+// Function to fetch raid data
 async function fetchRaidData(accessToken) {
-  const response = await fetch('https://us.api.blizzard.com/data/wow/journal-expansion/index?namespace=static-us&locale=en_US', {
+  const response = await fetch('https://us.api.blizzard.com/data/wow/raid/index?namespace=static-us&locale=en_US', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-
-  // Check if the response is OK (status code 200-299)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch raid data: ${response.status} ${response.statusText}`);
-  }
-
-  // Parse the response as JSON
   const data = await response.json();
-  return data;
+  return data.raids;
 }
 
 // Function to fetch boss data for a raid
@@ -633,86 +612,88 @@ async function fetchBosses(raidId, accessToken) {
 }
 
 // Function to fetch loot for a boss
- async function fetchAndSaveBossData() {
-   try {
-     // Step 1: Fetch access token
-     const accessToken = await getAccessToken();
-     console.log('Access Token:', accessToken);
- 
-     // Step 2: Fetch raid data
-     const raidData = await fetchRaidData(accessToken);
-     console.log('Raid Data:', raidData);
- 
-     // Step 3: Find the current raid (e.g., the last item in the tiers array)
-     const currentRaid = raidData.tiers[raidData.tiers.length - 1];
-     if (!currentRaid) {
-       throw new Error('Current raid not found in raid data.');
-     }
-     console.log('Current Raid:', currentRaid);
- 
-     // Step 4: Fetch boss data for the current raid
-     const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-expansion/${currentRaid.id}?namespace=static-us&locale=en_US`, {
-       headers: {
-         Authorization: `Bearer ${accessToken}`,
-       },
-     });
- 
-     // Check if the response is OK
-     if (!bossResponse.ok) {
-       throw new Error(`Failed to fetch boss data: ${bossResponse.status} ${bossResponse.statusText}`);
-     }
- 
-     const bossData = await bossResponse.json();
-     console.log('Boss Data:', bossData);
-     console.log('Boss Data:', bossData); // Log the full boss data
- 
-     // Step 5: Find the current raid tier (the last item in the raids array)
-     const currentRaidTier = bossData.raids[bossData.raids.length - 1];
-     const raidTierBossData = await raidTierBossResponse.json();
-     console.log('Current Raid Tier Boss Data:', raidTierBossData);
- 
-     // Step 7: Fetch loot data for each boss
-     const bossesWithLoot = await Promise.all(
-       raidTierBossData.encounters.map(async (boss) => {
-         const lootResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-encounter/${boss.id}?namespace=static-us&locale=en_US`, {
-           headers: {
-             Authorization: `Bearer ${accessToken}`,
-           },
-         });
- 
-         if (!lootResponse.ok) {
-           console.error(`Failed to fetch loot data for boss ${boss.name}: ${lootResponse.status} ${lootResponse.statusText}`);
-           return { ...boss, loot: [] }; // Return boss with empty loot array if fetch fails
-         }
- 
-         const lootData = await lootResponse.json();
-         return { ...boss, loot: lootData.items || [] }; // Add loot data to boss object
-       })
-     );
- 
-     console.log('Bosses with Loot:', bossesWithLoot);
- 
-     // Step 8: Save boss data to localStorage
-     localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossesWithLoot));
-     // Step 7: Save boss data to localStorage
-     localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(raidTierBossData));
-     console.log('Boss data saved to localStorage');
- 
-     // Step 9: Render the data
-     // Step 8: Render the data
-     renderBossInfo();
-     populateBossCategories(); // Update the Slotting tab headers
-   } catch (error) {
-     console.error('Error fetching boss data:', error);
-   }
- }
- 
+async function fetchBossLoot(bossId, accessToken) {
+  const response = await fetch(`https://us.api.blizzard.com/data/wow/boss/${bossId}?namespace=static-us&locale=en_US`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.loot; // Assuming the API returns loot data
+}
+
+// Function to fetch and save boss data
+async function fetchAndSaveBossData() {
+  try {
+    // Step 1: Fetch access token
+    const accessToken = await getAccessToken();
+    console.log('Access Token:', accessToken);
+
+    // Step 2: Fetch raid data
+    const raidData = await fetchRaidData(accessToken);
+    console.log('Raid Data:', raidData);
+
+    // Step 3: Find the current raid (e.g., the last item in the tiers array)
+    const currentRaid = raidData.tiers[raidData.tiers.length - 1];
+    if (!currentRaid) {
+      throw new Error('Current raid not found in raid data.');
+    }
+    console.log('Current Raid:', currentRaid);
+
+    // Step 4: Fetch boss data for the current raid
+    const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-expansion/${currentRaid.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Check if the response is OK
+    if (!bossResponse.ok) {
+      throw new Error(`Failed to fetch boss data: ${bossResponse.status} ${bossResponse.statusText}`);
+    }
+
+    const bossData = await bossResponse.json();
+    console.log('Boss Data:', bossData); // Log the full boss data
+
+    // Step 5: Find the current raid tier (the last item in the raids array)
+    const currentRaidTier = bossData.raids[bossData.raids.length - 1];
+    if (!currentRaidTier) {
+      throw new Error('Current raid tier not found in boss data.');
+    }
+    console.log('Current Raid Tier:', currentRaidTier);
+
+    // Step 6: Fetch boss data for the current raid tier
+    const raidTierBossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaidTier.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Check if the response is OK
+    if (!raidTierBossResponse.ok) {
+      throw new Error(`Failed to fetch boss data for current raid tier: ${raidTierBossResponse.status} ${raidTierBossResponse.statusText}`);
+    }
+
+    const raidTierBossData = await raidTierBossResponse.json();
+    console.log('Current Raid Tier Boss Data:', raidTierBossData);
+
+    // Step 7: Save boss data to localStorage
+    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(raidTierBossData));
+    console.log('Boss data saved to localStorage');
+
+    // Step 8: Render the data
+    renderBossInfo();
+  } catch (error) {
+    console.error('Error fetching boss data:', error);
+  }
+}
+
+// Function to render the Boss Info tab
 function renderBossInfo() {
   const bossLootContainer = document.getElementById('boss-loot-container');
   bossLootContainer.innerHTML = ''; // Clear existing content
 
   const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
-  console.log('Boss Data:', bossData); // Log the bossData object
 
   // Check if bossData has an "encounters" property
   const encounters = bossData.encounters || bossData.instance?.encounters || [];
@@ -753,6 +734,7 @@ function renderBossInfo() {
 
       // Render each loot item using a for...of loop
       for (const item of boss.items) {
+        console.log('Item:', item); // Log each item to debug
         table.innerHTML += `
           <tr>
             <td>${item.item?.name || 'Unknown Item'}</td>
@@ -781,3 +763,11 @@ function renderBossInfo() {
     });
   }
 }
+
+// Add event listener to the fetch button
+document.getElementById('fetch-boss-data-button').addEventListener('click', fetchAndSaveBossData);
+
+// Load and render boss data on page load
+document.addEventListener('DOMContentLoaded', () => {
+  renderBossInfo();
+});
