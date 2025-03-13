@@ -668,7 +668,6 @@ async function fetchBosses(raidId, accessToken) {
  
      // Step 5: Find the current raid tier (the last item in the raids array)
      const currentRaidTier = bossData.raids[bossData.raids.length - 1];
- @@ -687,102 +687,80 @@
      const raidTierBossData = await raidTierBossResponse.json();
      console.log('Current Raid Tier Boss Data:', raidTierBossData);
  
