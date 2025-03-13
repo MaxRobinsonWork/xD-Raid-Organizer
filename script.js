@@ -663,7 +663,7 @@ async function fetchAndSaveBossData() {
     }
 
     const bossData = await bossResponse.json();
-    console.log('Boss Data:', bossData);
+    console.log('Boss Data:', bossData); // Log the full boss data
 
     // Step 5: Find the current raid tier (the last item in the raids array)
     const currentRaidTier = bossData.raids[bossData.raids.length - 1];
@@ -687,34 +687,12 @@ async function fetchAndSaveBossData() {
     const raidTierBossData = await raidTierBossResponse.json();
     console.log('Current Raid Tier Boss Data:', raidTierBossData);
 
-    // Step 7: Fetch loot data for each boss
-    const bossesWithLoot = await Promise.all(
-      raidTierBossData.encounters.map(async (boss) => {
-        const lootResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-encounter/${boss.id}?namespace=static-us&locale=en_US`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!lootResponse.ok) {
-          console.error(`Failed to fetch loot data for boss ${boss.name}: ${lootResponse.status} ${lootResponse.statusText}`);
-          return { ...boss, loot: [] }; // Return boss with empty loot array if fetch fails
-        }
-
-        const lootData = await lootResponse.json();
-        return { ...boss, loot: lootData.items || [] }; // Add loot data to boss object
-      })
-    );
-
-    console.log('Bosses with Loot:', bossesWithLoot);
-
-    // Step 8: Save boss data to localStorage
-    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossesWithLoot));
+    // Step 7: Save boss data to localStorage
+    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(raidTierBossData));
     console.log('Boss data saved to localStorage');
 
-    // Step 9: Render the data
+    // Step 8: Render the data
     renderBossInfo();
-    populateBossCategories(); // Update the Slotting tab headers
   } catch (error) {
     console.error('Error fetching boss data:', error);
   }
