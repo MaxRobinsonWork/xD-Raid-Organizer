@@ -124,6 +124,10 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Client ID or Client Secret is missing. Please check your config.js file.');
 }
 
+// Example usage
+console.log('Client ID:', CLIENT_ID);
+console.log('Client Secret:', CLIENT_SECRET);
+
 // Array to store players
 let players = [];
 
