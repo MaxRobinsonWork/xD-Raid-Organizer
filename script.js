@@ -382,7 +382,7 @@ document.getElementById('roster-file').addEventListener('change', (event) => {
 let currentSortColumn = null;
 let isAscending = true;
 
-/// Function to sort the table by a specific column
+// Function to sort the table by a specific column
 function sortTable(columnIndex, isNumeric = false) {
   players.sort((a, b) => {
     let keyA, keyB;
@@ -510,7 +510,7 @@ function switchTab(event) {
   } else if (targetTab === 'second-table') {
     populateBossCategories(); // Re-render the boss assignments
   } else if (targetTab === 'boss-info') {
-    // We can add logic here later to fetch and render boss info dynamically
+    renderBossInfo(); // Re-render the boss info
   }
 }
 
@@ -565,32 +565,98 @@ function populateBossCategories() {
     });
   });
 }
-// Add event listeners to boss headers for expand/collapse
-document.querySelectorAll('.boss-header').forEach(header => {
-  header.addEventListener('click', () => {
-    const bossSection = header.parentElement;
-    const bossLoot = bossSection.querySelector('.boss-loot');
 
-    if (bossSection.classList.contains('expanded')) {
-      // Collapse the section
-      bossLoot.style.height = `${bossLoot.scrollHeight}px`; // Set height to current content height
-      requestAnimationFrame(() => {
-        bossLoot.style.height = '0'; // Animate to 0
-      });
+// Blizzard API integration for Boss Info tab
+const BOSS_DATA_KEY = 'bossData';
+
+// Function to fetch and save boss data
+async function fetchAndSaveBossData() {
+  try {
+    const accessToken = await getAccessToken();
+    const raids = await fetchRaidData(accessToken);
+    const currentRaid = raids[0]; // Assuming the first raid is the current one
+    const bosses = await fetchBosses(currentRaid.id, accessToken);
+
+    const bossData = [];
+    for (const boss of bosses) {
+      const loot = await fetchBossLoot(boss.id, accessToken);
+      bossData.push({ ...boss, loot });
+    }
+
+    // Save the data to localStorage
+    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossData));
+    console.log('Boss data saved to localStorage');
+
+    // Render the data
+    renderBossInfo();
+  } catch (error) {
+    console.error('Error fetching boss data:', error);
+  }
+}
+
+// Function to render the Boss Info tab
+function renderBossInfo() {
+  const bossLootContainer = document.getElementById('boss-loot-container');
+  bossLootContainer.innerHTML = ''; // Clear existing content
+
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
+
+  bossData.forEach(boss => {
+    const bossSection = document.createElement('div');
+    bossSection.className = 'boss-section';
+
+    // Boss header
+    const bossHeader = document.createElement('div');
+    bossHeader.className = 'boss-header';
+    bossHeader.innerHTML = `<h4>${boss.name}</h4>`;
+    bossSection.appendChild(bossHeader);
+
+    // Boss loot table
+    const bossLoot = document.createElement('div');
+    bossLoot.className = 'boss-loot';
+
+    if (boss.loot && boss.loot.length > 0) {
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Loot</th>
+            <th>Item Type</th>
+            <th>BiS For</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${boss.loot.map(item => `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.type}</td>
+              <td>${item.bisFor.join(', ')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      bossLoot.appendChild(table);
     } else {
-      // Expand the section
-      bossLoot.style.height = `${bossLoot.scrollHeight}px`; // Set height to content height
+      bossLoot.innerHTML = '<p>No loot data available.</p>';
     }
 
-    bossSection.classList.toggle('expanded');
+    bossSection.appendChild(bossLoot);
+    bossLootContainer.appendChild(bossSection);
   });
-});
 
-// Handle transition end to remove inline height
-document.querySelectorAll('.boss-loot').forEach(loot => {
-  loot.addEventListener('transitionend', () => {
-    if (loot.style.height !== '0px') {
-      loot.style.height = 'auto'; // Set height to auto after expanding
-    }
+  // Add event listeners for expand/collapse
+  document.querySelectorAll('.boss-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const bossSection = header.parentElement;
+      bossSection.classList.toggle('expanded');
+    });
   });
+}
+
+// Add event listener to the fetch button
+document.getElementById('fetch-boss-data-button').addEventListener('click', fetchAndSaveBossData);
+
+// Load and render boss data on page load
+document.addEventListener('DOMContentLoaded', () => {
+  renderBossInfo();
 });
