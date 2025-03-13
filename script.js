@@ -569,6 +569,51 @@ function populateBossCategories() {
 // Blizzard API integration for Boss Info tab
 const BOSS_DATA_KEY = 'bossData';
 
+// Function to get an access token
+async function getAccessToken() {
+  const response = await fetch(`https://us.battle.net/oauth/token?grant_type=client_credentials`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+    },
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+// Function to fetch raid data
+async function fetchRaidData(accessToken) {
+  const response = await fetch('https://us.api.blizzard.com/data/wow/raid/index?namespace=static-us&locale=en_US', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.raids;
+}
+
+// Function to fetch boss data for a raid
+async function fetchBosses(raidId, accessToken) {
+  const response = await fetch(`https://us.api.blizzard.com/data/wow/raid/${raidId}?namespace=static-us&locale=en_US`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.bosses;
+}
+
+// Function to fetch loot for a boss
+async function fetchBossLoot(bossId, accessToken) {
+  const response = await fetch(`https://us.api.blizzard.com/data/wow/boss/${bossId}?namespace=static-us&locale=en_US`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.loot; // Assuming the API returns loot data
+}
+
 // Function to fetch and save boss data
 async function fetchAndSaveBossData() {
   try {
