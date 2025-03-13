@@ -1,6 +1,6 @@
 // Blizzard API credentials
-const CLIENT_ID = 'your_client_id'; // Replace with your actual client ID
-const CLIENT_SECRET = 'your_client_secret'; // Replace with your actual client secret
+const CLIENT_ID = '1c3d4ca3eb544259ae2b902892d4f1c6'; // Replace with your Client ID
+const CLIENT_SECRET = 'tXVBRbipkKCeJZ8VijFM3JUQmlcl8Orz'; // Replace with your Client Secret
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Client ID or Client Secret is missing. Please check your script.js file.');
