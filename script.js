@@ -703,6 +703,7 @@ async function fetchAndSaveBossData() {
 
     // Step 9: Render the data
     renderBossInfo();
+    populateBossCategories(); // Update the Slotting tab headers
   } catch (error) {
     console.error('Error fetching boss data:', error);
   }
@@ -742,8 +743,8 @@ function renderBossInfo() {
         <tbody>
           ${boss.loot.map(item => `
             <tr>
-              <td>${item.name}</td>
-              <td>${item.type}</td>
+              <td>${item.item?.name || 'Unknown Item'}</td>
+              <td>${item.item?.type || 'N/A'}</td>
               <td>${item.bisFor?.join(', ') || 'N/A'}</td>
             </tr>
           `).join('')}
