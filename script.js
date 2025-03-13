@@ -119,6 +119,10 @@ const classSpecs = {
   }
 };
 
+// Blizzard API credentials
+const CLIENT_ID = '1c3d4ca3eb544259ae2b902892d4f1c6'; // Replace with your Client ID
+const CLIENT_SECRET = 'tXVBRbipkKCeJZ8VijFM3JUQmlcl8Orz'; // Replace with your Client Secret
+
 // Array to store players
 let players = [];
 
