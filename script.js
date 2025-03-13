@@ -723,8 +723,8 @@ function renderBossInfo() {
     return;
   }
 
-  // Render each boss
-  encounters.forEach(boss => {
+  // Render each boss using a for...of loop
+  for (const boss of encounters) {
     const bossSection = document.createElement('div');
     bossSection.className = 'boss-section';
 
@@ -749,15 +749,20 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.items.map(item => `
-            <tr>
-              <td>${item.item?.name || 'Unknown Item'}</td>
-              <td>${item.item?.type || 'N/A'}</td>
-              <td>${item.bisFor?.join(', ') || 'N/A'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
       `;
+
+      // Render each loot item using a for...of loop
+      for (const item of boss.items) {
+        table.innerHTML += `
+          <tr>
+            <td>${item.item?.name || 'Unknown Item'}</td>
+            <td>${item.item?.type || 'N/A'}</td>
+            <td>${item.bisFor?.join(', ') || 'N/A'}</td>
+          </tr>
+        `;
+      }
+
+      table.innerHTML += `</tbody>`;
       bossLoot.appendChild(table);
     } else {
       bossLoot.innerHTML = '<p>No loot data available.</p>';
@@ -765,13 +770,14 @@ function renderBossInfo() {
 
     bossSection.appendChild(bossLoot);
     bossLootContainer.appendChild(bossSection);
-  });
+  }
 
   // Add event listeners for expand/collapse
-  document.querySelectorAll('.boss-header').forEach(header => {
+  const bossHeaders = document.querySelectorAll('.boss-header');
+  for (const header of bossHeaders) {
     header.addEventListener('click', () => {
       const bossSection = header.parentElement;
       bossSection.classList.toggle('expanded');
     });
-  });
+  }
 }
