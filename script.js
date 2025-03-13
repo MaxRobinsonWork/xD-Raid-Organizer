@@ -119,11 +119,17 @@ const classSpecs = {
   }
 };
 
-// Blizzard API credentials (loaded from config.js)
+// script.js
+
+// Blizzard API credentials
+const CLIENT_ID = '1c3d4ca3eb544259ae2b902892d4f1c6'; // Replace with your Client ID
+const CLIENT_SECRET = 'tXVBRbipkKCeJZ8VijFM3JUQmlcl8Orz'; // Replace with your Client Secret
+
 if (!CLIENT_ID || !CLIENT_SECRET) {
-  console.error('Client ID or Client Secret is missing. Please check your config.js file.');
+  console.error('Client ID or Client Secret is missing. Please check your script.js file.');
 }
 
+// Rest of your code...
 // Example usage
 console.log('Client ID:', CLIENT_ID);
 console.log('Client Secret:', CLIENT_SECRET);
