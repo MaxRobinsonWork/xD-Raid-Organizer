@@ -635,10 +635,14 @@ async function fetchAndSaveBossData() {
     const raidData = await fetchRaidData(accessToken);
     console.log('Raid Data:', raidData);
 
-    // Step 3: Fetch boss data for the first raid
-    const currentRaid = raidData.tiers[0]; // Use the correct property for the raid
+    // Step 3: Find the current raid (e.g., "Current Season")
+    const currentRaid = raidData.tiers.find(tier => tier.name === 'Current Season');
+    if (!currentRaid) {
+      throw new Error('Current raid not found in raid data.');
+    }
     console.log('Current Raid:', currentRaid);
 
+    // Step 4: Fetch boss data for the current raid
     const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaid.id}?namespace=static-us&locale=en_US`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -653,25 +657,34 @@ async function fetchAndSaveBossData() {
     const bossData = await bossResponse.json();
     console.log('Boss Data:', bossData);
 
-    // Step 4: Save boss data to localStorage
+    // Step 5: Save boss data to localStorage
     localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossData));
     console.log('Boss data saved to localStorage');
 
-    // Step 5: Render the data
+    // Step 6: Render the data
     renderBossInfo();
   } catch (error) {
     console.error('Error fetching boss data:', error);
   }
 }
 
-// Function to render the Boss Info tab
 function renderBossInfo() {
   const bossLootContainer = document.getElementById('boss-loot-container');
   bossLootContainer.innerHTML = ''; // Clear existing content
 
-  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
 
-  bossData.forEach(boss => {
+  // Check if bossData has a "bosses" or "encounters" property
+  const bosses = bossData.encounters || bossData.bosses || [];
+  console.log('Bosses:', bosses);
+
+  if (bosses.length === 0) {
+    bossLootContainer.innerHTML = '<p>No boss data available.</p>';
+    return;
+  }
+
+  // Render each boss
+  bosses.forEach(boss => {
     const bossSection = document.createElement('div');
     bossSection.className = 'boss-section';
 
