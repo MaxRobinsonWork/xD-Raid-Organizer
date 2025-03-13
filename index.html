@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xD Raid Organizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>xD Raid Organizer</h1>
+
+  <!-- Tab Navigation -->
+  <div id="tab-navigation">
+    <button class="tab-button active" data-tab="player-table">Roster</button>
+    <button class="tab-button" data-tab="second-table">Slotting</button>
+    <button class="tab-button" data-tab="boss-info">Boss Info</button>
+  </div>
+
+  <!-- Player Table (First Tab) -->
+  <div id="player-table" class="tab-content active">
+    <h3>Players <span id="total-players">(0)</span></h3>
+
+    <!-- Roster Options -->
+    <div id="roster-options">
+      <button id="save-roster-button">Save Roster</button>
+      <button id="load-roster-button">Load Roster</button>
+      <button id="clear-roster-button">Clear Roster</button>
+      <input type="file" id="roster-file" accept=".json" style="display: none;">
+    </div>
+
+    <!-- Add Player Section -->
+    <div id="player-input">
+      <h3>Add Players</h3>
+      <label for="player-name">Name:</label>
+      <input type="text" id="player-name" placeholder="Player Name">
+      
+      <label for="player-class">Class:</label>
+      <select id="player-class">
+        <option value="">Select Class</option>
+        <option value="Death Knight">Death Knight</option>
+        <option value="Demon Hunter">Demon Hunter</option>
+        <option value="Druid">Druid</option>
+        <option value="Evoker">Evoker</option>
+        <option value="Hunter">Hunter</option>
+        <option value="Mage">Mage</option>
+        <option value="Monk">Monk</option>
+        <option value="Paladin">Paladin</option>
+        <option value="Priest">Priest</option>
+        <option value="Rogue">Rogue</option>
+        <option value="Shaman">Shaman</option>
+        <option value="Warlock">Warlock</option>
+        <option value="Warrior">Warrior</option>
+      </select>
+      
+      <label for="player-spec">Spec:</label>
+      <select id="player-spec">
+        <option value="">Select Spec</option>
+      </select>
+      
+      <label for="player-weighting">Weighting:</label>
+      <input type="number" id="player-weighting" value="1.0" step="0.1">
+      
+      <button id="add-player-button">Add Player</button>
+    </div>
+
+    <!-- Player Table -->
+    <table>
+      <thead>
+        <tr>
+          <th id="header-name">Name</th>
+          <th id="header-class">Class</th>
+          <th id="header-spec">Spec</th>
+          <th id="header-role">Role</th>
+          <th id="header-tier-token">Tier Token</th>
+          <th id="header-armor-type">Armor Type</th>
+          <th id="header-weighting">Weighting</th>
+          <th id="header-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="player-list">
+        <!-- Players will be added here dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Second Table (Second Tab) -->
+  <div id="second-table" class="tab-content">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h3>Slotting</h3>
+      <button id="optimize-button">Optimize Raid</button>
+    </div>
+    <div id="boss-container">
+      <!-- Row 1 -->
+      <div class="boss-row">
+        <div class="boss">
+          <h4>Vexie and the Geargrinders</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>Cauldron of Carnage</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>Rik Reverb</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>Stix Bunkjunker</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+      </div>
+      <!-- Row 2 -->
+      <div class="boss-row">
+        <div class="boss">
+          <h4>Sprocktmonger Lockenstock</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>The One-Armed Bandit</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>Mug'Zee, Heads of Security</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+        <div class="boss">
+          <h4>Chrome King Gallywix</h4>
+          <div class="categories">
+            <div class="category">Melee</div>
+            <div class="category">Ranged</div>
+            <div class="category">Healers</div>
+            <div class="category">Tanks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boss Info Tab (Third Tab) -->
+  <div id="boss-info" class="tab-content">
+    <h3>Boss Info</h3>
+    <div id="boss-loot-container">
+      <!-- Boss 1 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Vexie and the Geargrinders</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Helm of the Geargrinder</td>
+                <td>Head</td>
+                <td>Death Knight, Warrior</td>
+              </tr>
+              <tr>
+                <td>Geargrinder's Gauntlets</td>
+                <td>Hands</td>
+                <td>Paladin, Shaman</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 2 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Cauldron of Carnage</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cauldron's Fury</td>
+                <td>Weapon</td>
+                <td>Mage, Warlock</td>
+              </tr>
+              <tr>
+                <td>Cauldron's Embrace</td>
+                <td>Chest</td>
+                <td>Priest, Druid</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 3 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Rik Reverb</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reverb's Resonator</td>
+                <td>Trinket</td>
+                <td>Hunter, Rogue</td>
+              </tr>
+              <tr>
+                <td>Echoing Boots</td>
+                <td>Feet</td>
+                <td>Monk, Demon Hunter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 4 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Stix Bunkjunker</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bunkjunker's Wrench</td>
+                <td>Weapon</td>
+                <td>Warrior, Paladin</td>
+              </tr>
+              <tr>
+                <td>Junker's Plating</td>
+                <td>Chest</td>
+                <td>Death Knight, Shaman</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 5 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Sprocktmonger Lockenstock</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Lockenstock's Goggles</td>
+                <td>Head</td>
+                <td>Mage, Warlock</td>
+              </tr>
+              <tr>
+                <td>Sprocket's Spanner</td>
+                <td>Weapon</td>
+                <td>Rogue, Hunter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 6 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>The One-Armed Bandit</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bandit's Gambit</td>
+                <td>Trinket</td>
+                <td>Priest, Druid</td>
+              </tr>
+              <tr>
+                <td>One-Armed Blade</td>
+                <td>Weapon</td>
+                <td>Demon Hunter, Monk</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 7 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Mug'Zee, Heads of Security</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mug'Zee's Badge</td>
+                <td>Trinket</td>
+                <td>Warrior, Paladin</td>
+              </tr>
+              <tr>
+                <td>Security Cloak</td>
+                <td>Back</td>
+                <td>Rogue, Hunter</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Boss 8 -->
+      <div class="boss-section">
+        <div class="boss-header">
+          <h4>Chrome King Gallywix</h4>
+        </div>
+        <div class="boss-loot">
+          <table>
+            <thead>
+              <tr>
+                <th>Loot</th>
+                <th>Item Type</th>
+                <th>BiS For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gallywix's Crown</td>
+                <td>Head</td>
+                <td>Mage, Warlock</td>
+              </tr>
+              <tr>
+                <td>Chrome Hammer</td>
+                <td>Weapon</td>
+                <td>Shaman, Death Knight</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

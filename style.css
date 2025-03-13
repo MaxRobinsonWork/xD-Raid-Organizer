@@ -1,0 +1,391 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+h1 {
+  color: #4CAF50;
+}
+
+#app {
+  margin-top: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input, select {
+  padding: 5px;
+  font-size: 16px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#player-input {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#player-table {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.actions button {
+  padding: 5px 10px;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.edit-input {
+  width: 100%; /* Ensure the input takes up the full width of its container */
+  padding: 5px; /* Adjust padding for better fit */
+  font-size: 14px; /* Consistent font size */
+  margin: 0; /* Remove all margins */
+  box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+#roster-options {
+  margin-top: 20px;
+}
+
+#roster-options button {
+  margin-right: 10px;
+}
+
+/* Target Edit buttons specifically inside the player table */
+#player-table .player-name,
+#player-table .player-spec,
+#player-table .player-weighting {
+  display: flex;
+  justify-content: space-between; /* Keeps text on the left and button on the right */
+  align-items: center; /* Centers the button vertically */
+}
+
+#player-table .player-name button,
+#player-table .player-spec button,
+#player-table .player-weighting button {
+  margin-left: 10px; /* Adds spacing between the text and the button */
+  padding: 5px 10px; /* Adjust padding for a more compact button */
+  font-size: 12px; /* Adjust font size if needed */
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+#player-table .player-name button:hover,
+#player-table .player-spec button:hover,
+#player-table .player-weighting button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.spec-edit-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Add some spacing between the dropdown and the button */
+}
+
+.save-spec-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.save-spec-button:hover {
+  background-color: #45a049;
+}
+
+/* Compact Table Styles */
+#player-table table {
+  font-size: 12px; /* Smaller font size */
+}
+
+#player-table th,
+#player-table td {
+  padding: 5px; /* Reduced padding */
+}
+
+#player-table .player-name,
+#player-table .player-class,
+#player-table .player-spec,
+#player-table .player-weighting {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Reduced spacing between elements */
+}
+
+#player-table button {
+  padding: 3px 6px; /* Smaller buttons */
+  font-size: 12px; /* Smaller button text */
+}
+
+#player-table .actions button {
+  margin-right: 3px; /* Reduced spacing between action buttons */
+}
+
+#player-table .edit-input {
+  padding: 3px; /* Smaller input fields */
+  font-size: 12px; /* Smaller input text */
+}
+
+#player-table .spec-edit-container {
+  gap: 5px; /* Reduced spacing between dropdown and save button */
+}
+
+#player-table .save-spec-button {
+  padding: 3px 6px; /* Smaller save button */
+  font-size: 12px; /* Smaller save button text */
+}
+
+/* Roster Options Styling */
+#roster-options {
+  margin-bottom: 20px; /* Add some spacing below the roster options */
+}
+
+#roster-options h3 {
+  margin-bottom: 10px; /* Spacing below the "Roster Options" heading */
+}
+
+#roster-options button {
+  margin-right: 10px; /* Spacing between buttons */
+}
+
+#roster-options button {
+  margin-right: 10px; /* Spacing between buttons */
+  padding: 10px 20px; /* Consistent button padding */
+  font-size: 16px; /* Consistent button text size */
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+#roster-options button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Tab Navigation */
+#tab-navigation {
+  margin-bottom: 20px;
+}
+
+#tab-navigation .tab-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #f2f2f2;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+#tab-navigation .tab-button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#tab-navigation .tab-button:hover {
+  background-color: #ddd;
+}
+
+/* Tab Content */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Boss Container */
+#boss-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.boss-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.boss {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.boss h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.boss .categories {
+  display: flex;
+  gap: 10px; /* Space between categories */
+  width: 100%; /* Ensure the container takes full width */
+}
+
+.category {
+  padding: 5px;
+  background-color: #f2f2f2;
+  border-radius: 3px;
+  text-align: center;
+  flex: 1; /* Each category takes equal space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.player-assignment {
+  margin: 2px 0;
+  padding: 2px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+/* Class Background Colors */
+.player-name.death-knight,
+.player-assignment.death-knight { background-color: #C41F3B; color: #FFF; } /* Death Knight */
+.player-name.demon-hunter,
+.player-assignment.demon-hunter { background-color: #A330C9; color: #FFF; } /* Demon Hunter */
+.player-name.druid,
+.player-assignment.druid { background-color: #FF7D0A; } /* Druid */
+.player-name.evoker,
+.player-assignment.evoker { background-color: #33937F; color: #FFF; } /* Evoker */
+.player-name.hunter,
+.player-assignment.hunter { background-color: #ABD473; } /* Hunter */
+.player-name.mage,
+.player-assignment.mage { background-color: #69CCF0; } /* Mage */
+.player-name.monk,
+.player-assignment.monk { background-color: #00FF96; } /* Monk */
+.player-name.paladin,
+.player-assignment.paladin { background-color: #F58CBA; } /* Paladin */
+.player-name.priest,
+.player-assignment.priest { background-color: #FFFFFF; } /* Priest */
+.player-name.rogue,
+.player-assignment.rogue { background-color: #FFF569; } /* Rogue */
+.player-name.shaman,
+.player-assignment.shaman { background-color: #0070DE; color: #FFF; } /* Shaman */
+.player-name.warlock,
+.player-assignment.warlock { background-color: #9482C9; } /* Warlock */
+.player-name.warrior,
+.player-assignment.warrior { background-color: #C79C6E; } /* Warrior */
+
+/* Ensure text is readable on the background */
+.player-name,
+.player-assignment {
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: #000; /* Default text color (black) */
+}
+/* Boss Info Tab Styles */
+#boss-info {
+  margin-top: 20px;
+}
+
+.boss-section {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.boss-header {
+  padding: 10px;
+  background-color: #f2f2f2;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boss-header h4 {
+  margin: 0;
+}
+
+.boss-loot {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.2s ease-out;
+}
+
+.boss-loot table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures columns respect fixed widths */
+}
+
+.boss-loot th,
+.boss-loot td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  overflow: hidden; /* Prevents content from overflowing */
+  white-space: nowrap; /* Prevents text from wrapping */
+  text-overflow: ellipsis; /* Adds "..." for overflow text */
+}
+
+.boss-loot th {
+  background-color: #e0e0e0;
+}
+
+/* Fixed column widths */
+.boss-loot th:nth-child(1),
+.boss-loot td:nth-child(1) {
+  width: 50%; /* Loot column */
+}
+
+.boss-loot th:nth-child(2),
+.boss-loot td:nth-child(2) {
+  width: 25%; /* Item Type column */
+}
+
+.boss-loot th:nth-child(3),
+.boss-loot td:nth-child(3) {
+  width: 25%; /* BiS For column */
+}
+
+/* Expanded state */
+.boss-section.expanded .boss-loot {
+  height: auto; /* Let the content determine the height */
+}

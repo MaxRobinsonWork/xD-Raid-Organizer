@@ -1,0 +1,182 @@
+[
+  {
+    "name": "Maziold",
+    "class": "Death Knight",
+    "spec": "Blood",
+    "weighting": 1
+  },
+  {
+    "name": "Zephyrdh",
+    "class": "Demon Hunter",
+    "spec": "Havoc",
+    "weighting": 1
+  },
+  {
+    "name": "Rakkaw",
+    "class": "Druid",
+    "spec": "Balance",
+    "weighting": 1
+  },
+  {
+    "name": "Katskratches",
+    "class": "Druid",
+    "spec": "Restoration",
+    "weighting": 1
+  },
+  {
+    "name": "Rizzinator",
+    "class": "Evoker",
+    "spec": "Devastation",
+    "weighting": 1
+  },
+  {
+    "name": "Honor",
+    "class": "Hunter",
+    "spec": "Beast Mastery",
+    "weighting": 1
+  },
+  {
+    "name": "Eattblood",
+    "class": "Mage",
+    "spec": "Fire",
+    "weighting": 1
+  },
+  {
+    "name": "Delv",
+    "class": "Mage",
+    "spec": "Fire",
+    "weighting": 1
+  },
+  {
+    "name": "Neyha",
+    "class": "Monk",
+    "spec": "Windwalker",
+    "weighting": 1
+  },
+  {
+    "name": "Ææåæäææâæáææ",
+    "class": "Monk",
+    "spec": "Mistweaver",
+    "weighting": 1
+  },
+  {
+    "name": "Arrilex",
+    "class": "Paladin",
+    "spec": "Protection",
+    "weighting": 1
+  },
+  {
+    "name": "Pima",
+    "class": "Priest",
+    "spec": "Discipline",
+    "weighting": 1
+  },
+  {
+    "name": "Oqur",
+    "class": "Priest",
+    "spec": "Discipline",
+    "weighting": 1
+  },
+  {
+    "name": "Incendioox",
+    "class": "Priest",
+    "spec": "Shadow",
+    "weighting": 1
+  },
+  {
+    "name": "Miyar",
+    "class": "Rogue",
+    "spec": "Subtlety",
+    "weighting": 1
+  },
+  {
+    "name": "Volkanik",
+    "class": "Shaman",
+    "spec": "Enhancement",
+    "weighting": 1
+  },
+  {
+    "name": "Darkenedlife",
+    "class": "Warlock",
+    "spec": "Destruction",
+    "weighting": 1
+  },
+  {
+    "name": "Helltswar",
+    "class": "Warrior",
+    "spec": "Fury",
+    "weighting": 1
+  },
+  {
+    "name": "Ralfbread",
+    "class": "Warrior",
+    "spec": "Fury",
+    "weighting": 0.9
+  },
+  {
+    "name": "Paxington",
+    "class": "Hunter",
+    "spec": "Beast Mastery",
+    "weighting": 0.8
+  },
+  {
+    "name": "Zaxachi",
+    "class": "Monk",
+    "spec": "Windwalker",
+    "weighting": 0.8
+  },
+  {
+    "name": "Twicks",
+    "class": "Priest",
+    "spec": "Shadow",
+    "weighting": 0.7
+  },
+  {
+    "name": "Hykon",
+    "class": "Warrior",
+    "spec": "Fury",
+    "weighting": 0.7
+  },
+  {
+    "name": "Hmang",
+    "class": "Death Knight",
+    "spec": "Frost",
+    "weighting": 0.5
+  },
+  {
+    "name": "Poetry",
+    "class": "Demon Hunter",
+    "spec": "Havoc",
+    "weighting": 0.5
+  },
+  {
+    "name": "Mistiivation",
+    "class": "Evoker",
+    "spec": "Devastation",
+    "weighting": 0.5
+  },
+  {
+    "name": "Caponixyz",
+    "class": "Evoker",
+    "spec": "Devastation",
+    "weighting": 0.5
+  },
+  {
+    "name": "Bargo",
+    "class": "Hunter",
+    "spec": "Beast Mastery",
+    "weighting": 0.5
+  },
+  {
+    "name": "Byuld",
+    "class": "Druid",
+    "spec": "Balance",
+    "weighting": 0.4
+  },
+  {
+    "name": "Kinbote",
+    "class": "Rogue",
+    "spec": "Subtlety",
+    "weighting": 0.3
+  }
+]

@@ -1,0 +1,21 @@
+Adjustments to be made for raid organizer in no particular order
+
+- Allow searching of the character within the roster so you dont have to manually find the player. 
+
+
+- The optimize raid button should pull from the table of players to create the comp
+- The Raid comp should not be a total for the entire raid but per boss
+
+- Need to add boss loot tables
+- Need to add players bis items
+
+- Role Balancing per boss raid comp? IE, Vexie is 2 tanks 2 healers 16 dps, Stix is 2 tank, 3 healer, 15 dps and buttons will check the distribution before slotting?
+
+- Probably want 3 slotting buttons? 
+	1 Based on player weighting(Slot the 20 highest weighted plays with a distribution of 2 tanks 4 healers 14 dps)
+	1 Based on splits for effective gearing(So average weighting score / 3 with an even distribution)
+	
+
+Next Steps - Deepseek Recommendation
+- Drag and drop functionality in the slotting tab to move players
+
