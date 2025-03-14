@@ -804,7 +804,7 @@ function getItemTypeDescription(itemDetails) {
   if (
     itemClass === 'Miscellaneous' &&
     itemSubclass === 'Junk' &&
-    inventoryType === 'Non-equip'
+    inventoryType === 'NON_EQUIP' // Updated to match the API response
   ) {
     return 'Tier Token';
   }
