@@ -762,13 +762,15 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.loot.map((item) => `
-            <tr>
-              <td>${item.item.name}</td>
-              <td>${item.details?.item_subclass?.name || 'N/A'}</td>
-            </tr>
-          `).join('')}
-          console.log('Item Details:', item.details);
+          ${boss.loot.map((item) => {
+            const itemType = getItemTypeDescription(item.details);
+            return `
+              <tr>
+                <td>${item.item.name}</td>
+                <td>${itemType}</td>
+              </tr>
+            `;
+          }).join('')}
         </tbody>
       `;
       bossLoot.appendChild(table);
@@ -787,6 +789,25 @@ function renderBossInfo() {
       bossSection.classList.toggle('expanded');
     });
   });
+}
+
+// Helper function to generate item type descriptions
+function getItemTypeDescription(itemDetails) {
+  const itemClass = itemDetails?.item_class?.name || 'Unknown';
+  const itemSubclass = itemDetails?.item_subclass?.name || 'Unknown';
+  const inventoryType = itemDetails?.inventory_type?.type || 'Unknown';
+
+  if (itemClass === 'Armor') {
+    // For armor, use the inventory type to describe the piece (e.g., "Feet" -> "Boots")
+    return `${inventoryType} ${itemSubclass}`;
+  } else if (itemClass === 'Weapon') {
+    // For weapons, combine inventory type and subclass (e.g., "One Hand Sword")
+    return `${inventoryType} ${itemSubclass}`;
+  } else {
+    // For other item types (e.g., Trinket, Off-hand), just return the subclass
+    return itemSubclass;
+  }
+  console.log('Item Details:', itemDetails);
 }
 
 // Add event listener to the fetch button
