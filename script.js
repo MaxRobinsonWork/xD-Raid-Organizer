@@ -570,6 +570,13 @@ function populateBossCategories() {
   });
 }
 
+function capitalizeWords(str) {
+  return str
+    .split(' ') // Split the string into words
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+    .join(' '); // Join the words back into a single string
+}
+
 // Blizzard API integration for Boss Info tab
 const BOSS_DATA_KEY = 'bossData';
 
@@ -796,36 +803,39 @@ function getItemTypeDescription(itemDetails) {
   // Log the full itemDetails object for debugging
   console.log('Item Details:', itemDetails);
 
-  const itemClass = itemDetails?.item_class?.name || 'Unknown';
-  const itemSubclass = itemDetails?.item_subclass?.name || 'Unknown';
-  const inventoryType = itemDetails?.inventory_type?.type || 'Unknown';
+  const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
+  const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
+  const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
+
+  let itemType = '';
 
   // Handle Tier Tokens
   if (
-    itemClass === 'Miscellaneous' &&
-    itemSubclass === 'Junk' &&
-    inventoryType === 'NON_EQUIP' // Updated to match the API response
+    itemClass === 'miscellaneous' &&
+    itemSubclass === 'junk' &&
+    inventoryType === 'non-equip'
   ) {
-    return 'Tier Token';
+    itemType = 'Tier Token';
   }
-
   // Handle Trinkets
-  if (inventoryType === 'Trinket') {
-    return 'Trinket';
+  else if (inventoryType === 'trinket') {
+    itemType = 'Trinket';
   }
-
   // Handle Weapons
-  if (itemClass === 'Weapon') {
-    return `${inventoryType} ${itemSubclass}`;
+  else if (itemClass === 'weapon') {
+    itemType = `${inventoryType} ${itemSubclass}`;
   }
-
   // Handle Armor
-  if (itemClass === 'Armor') {
-    return `${itemSubclass} ${inventoryType}`;
+  else if (itemClass === 'armor') {
+    itemType = `${itemSubclass} ${inventoryType}`;
+  }
+  // Default case
+  else {
+    itemType = `${itemSubclass}`;
   }
 
-  // Default case
-  return `${itemSubclass}`;
+  // Capitalize the first letter of each word in the item type
+  return capitalizeWords(itemType);
 }
 
 // Add event listener to the fetch button
