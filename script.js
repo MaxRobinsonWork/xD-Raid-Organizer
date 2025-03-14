@@ -759,17 +759,16 @@ function renderBossInfo() {
           <tr>
             <th>Loot</th>
             <th>Item Type</th>
-            <th>Stats</th>
           </tr>
         </thead>
         <tbody>
           ${boss.loot.map((item) => `
             <tr>
               <td>${item.item.name}</td>
-              <td>${item.details?.item_class?.name || 'N/A'}</td>
-              <td>${item.details?.stats?.map(stat => `${stat.type}: ${stat.value}`).join(', ') || 'N/A'}</td>
+              <td>${item.details?.item_subclass?.name || 'N/A'}</td>
             </tr>
           `).join('')}
+          console.log('Item Details:', item.details);
         </tbody>
       `;
       bossLoot.appendChild(table);
