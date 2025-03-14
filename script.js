@@ -769,15 +769,20 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.loot.map((item) => {
-            const itemType = getItemTypeDescription(item.details);
-            return `
-              <tr>
-                <td>${item.item.name}</td>
-                <td>${itemType}</td>
-              </tr>
-            `;
-          }).join('')}
+          ${boss.loot
+            .map((item) => {
+              const itemType = getItemTypeDescription(item.details);
+              if (itemType === null) {
+                return ''; // Skip recipes
+              }
+              return `
+                <tr>
+                  <td>${item.item.name}</td>
+                  <td>${itemType}</td>
+                </tr>
+              `;
+            })
+            .join('')}
         </tbody>
       `;
       bossLoot.appendChild(table);
@@ -806,28 +811,37 @@ function getItemTypeDescription(itemDetails) {
   const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
   const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
   const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
+  const inventoryTypeName = (itemDetails?.inventory_type?.name || 'Unknown').toLowerCase();
 
   let itemType = '';
 
-  // Handle Tier Tokens
-  if (
-    itemClass === 'miscellaneous' &&
-    itemSubclass === 'junk' &&
-    inventoryType === 'non-equip'
-  ) {
-    itemType = 'Tier Token';
-  }
-  // Handle Trinkets
-  else if (inventoryType === 'trinket') {
-    itemType = 'Trinket';
-  }
   // Handle Weapons
-  else if (itemClass === 'weapon') {
+  if (itemClass === 'weapon') {
     itemType = `${inventoryType} ${itemSubclass}`;
+  }
+  // Handle Recipes (ignore them)
+  else if (itemClass === 'recipe') {
+    return null; // Skip this item
   }
   // Handle Armor
   else if (itemClass === 'armor') {
-    itemType = `${itemSubclass} ${inventoryType}`;
+    if (inventoryType === 'cloak') {
+      itemType = 'Cloak';
+    } else if (itemSubclass === 'miscellaneous' && inventoryType === 'trinket') {
+      itemType = 'Trinket';
+    } else {
+      itemType = `${itemSubclass} ${inventoryType}`;
+    }
+  }
+  // Handle Reagents
+  else if (itemClass === 'reagent') {
+    itemType = 'Omni-Token';
+  }
+  // Handle Miscellaneous
+  else if (itemClass === 'miscellaneous') {
+    if (itemSubclass === 'junk' && inventoryTypeName === 'non-equippable') {
+      itemType = 'Tier Token';
+    }
   }
   // Default case
   else {
