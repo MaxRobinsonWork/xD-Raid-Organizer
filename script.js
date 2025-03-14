@@ -813,11 +813,16 @@ function getItemTypeDescription(itemDetails) {
   const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
   const inventoryTypeName = (itemDetails?.inventory_type?.name || 'Unknown').toLowerCase();
 
+  // Exclude Mounts
+  if (itemClass === 'miscellaneous' && itemSubclass === 'mount') {
+    return null; // Skip this item
+  }
+
   let itemType = '';
 
   // Handle Weapons
   if (itemClass === 'weapon') {
-    itemType = `${inventoryType} ${itemSubclass}`;
+    itemType = `${inventoryTypeName} ${itemSubclass}`;
   }
   // Handle Recipes (ignore them)
   else if (itemClass === 'recipe') {
@@ -825,7 +830,13 @@ function getItemTypeDescription(itemDetails) {
   }
   // Handle Armor
   else if (itemClass === 'armor') {
-    if (inventoryType === 'cloak') {
+    if (itemSubclass === 'miscellaneous') {
+      if (inventoryType === 'finger') {
+        itemType = 'Ring';
+      } else {
+        itemType = inventoryType;
+      }
+    } else if (inventoryType === 'cloak') {
       itemType = 'Cloak';
     } else if (itemSubclass === 'miscellaneous' && inventoryType === 'trinket') {
       itemType = 'Trinket';
