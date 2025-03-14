@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Read the environment variables
+// Read the environment variables from GitHub Repository Variables
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
