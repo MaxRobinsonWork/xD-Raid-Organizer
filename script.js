@@ -793,6 +793,9 @@ function renderBossInfo() {
 
 // Helper function to generate item type descriptions
 function getItemTypeDescription(itemDetails) {
+  // Log the full itemDetails object for debugging
+  console.log('Item Details:', itemDetails);
+
   const itemClass = itemDetails?.item_class?.name || 'Unknown';
   const itemSubclass = itemDetails?.item_subclass?.name || 'Unknown';
   const inventoryType = itemDetails?.inventory_type?.type || 'Unknown';
@@ -807,7 +810,6 @@ function getItemTypeDescription(itemDetails) {
     // For other item types (e.g., Trinket, Off-hand), just return the subclass
     return itemSubclass;
   }
-  console.log('Item Details:', itemDetails);
 }
 
 // Add event listener to the fetch button
