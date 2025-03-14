@@ -800,16 +800,32 @@ function getItemTypeDescription(itemDetails) {
   const itemSubclass = itemDetails?.item_subclass?.name || 'Unknown';
   const inventoryType = itemDetails?.inventory_type?.type || 'Unknown';
 
-  if (itemClass === 'Armor') {
-    // For armor, use the inventory type to describe the piece (e.g., "Feet" -> "Boots")
-    return `${inventoryType} ${itemSubclass}`;
-  } else if (itemClass === 'Weapon') {
-    // For weapons, combine inventory type and subclass (e.g., "One Hand Sword")
-    return `${inventoryType} ${itemSubclass}`;
-  } else {
-    // For other item types (e.g., Trinket, Off-hand), just return the subclass
-    return itemSubclass;
+  // Handle Tier Tokens
+  if (
+    itemClass === 'Miscellaneous' &&
+    itemSubclass === 'Junk' &&
+    inventoryType === 'Non-equip'
+  ) {
+    return 'Tier Token';
   }
+
+  // Handle Trinkets
+  if (inventoryType === 'Trinket') {
+    return 'Trinket';
+  }
+
+  // Handle Weapons
+  if (itemClass === 'Weapon') {
+    return `${inventoryType} ${itemSubclass}`;
+  }
+
+  // Handle Armor
+  if (itemClass === 'Armor') {
+    return `${itemSubclass} ${inventoryType}`;
+  }
+
+  // Default case
+  return `${itemSubclass}`;
 }
 
 // Add event listener to the fetch button
