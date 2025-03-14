@@ -679,6 +679,8 @@ async function fetchAndSaveBossData() {
         }
 
         const lootData = await lootResponse.json();
+        console.log('Loot Data for Boss:', boss.name, lootData); // Log the loot data
+
         return {
           ...boss,
           loot: lootData.items || [], // Add loot data to the boss object
@@ -737,9 +739,9 @@ function renderBossInfo() {
         <tbody>
           ${boss.loot.map((item) => `
             <tr>
-              <td>${item.name}</td>
-              <td>${item.type}</td>
-              <td>${item.bisFor ? item.bisFor.join(', ') : 'N/A'}</td>
+              <td>${item.item?.name || 'N/A'}</td>
+              <td>${item.item?.type || 'N/A'}</td>
+              <td>${item.bisFor?.join(', ') || 'N/A'}</td>
             </tr>
           `).join('')}
         </tbody>
