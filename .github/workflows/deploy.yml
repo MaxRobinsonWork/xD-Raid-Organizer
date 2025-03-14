@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: 16  # Use the Node.js version you're working with
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Run pre-build script
         env:
           CLIENT_ID: ${{ vars.CLIENT_ID }}
