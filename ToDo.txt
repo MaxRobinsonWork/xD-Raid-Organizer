@@ -1,21 +1,24 @@
 Adjustments to be made for raid organizer in no particular order
 
+Roster Tab
 - Allow searching of the character within the roster so you dont have to manually find the player. 
+- Add something (Checkbox/Dropdown/Open to suggestions) for denoting if a character is a Main/Alt. 
+	- Alts should be be naturally flagged in lower prio than that of a main?(There are special cases here) 
 
-
+Slotting Tab
 - The optimize raid button should pull from the table of players to create the comp
-- The Raid comp should not be a total for the entire raid but per boss
+- Allow per boss comp variations IE, 2 Tanks, 3 Healers, 15 DPS Slotted on Stix, but on Mug'zee you have 2 Tanks, 5 Healers, 15 DPS. 
+	-This however will cause problems due to the fact of how people are flagged healing and dps i do not know the best possible solution for an automated tool
+	-One potential solve is adding some sort of "flex" indicator to players
+- Add Ability to drag and drop players to different sections per boss. IE Stix has 3 healers, Mugzee has 5 healers, Travis on priest is in the raid he would be healer dragged to Healer on Mugzee. 
 
-- Need to add boss loot tables
-- Need to add players bis items
 
-- Role Balancing per boss raid comp? IE, Vexie is 2 tanks 2 healers 16 dps, Stix is 2 tank, 3 healer, 15 dps and buttons will check the distribution before slotting?
+- The Raid comp should not be a total for the entire raid but per boss - IDK What this meant
+
+- Need to add boss loot tables - In progress almost done
+- Need to add players bis items - Huge Workload not sure how to implement
 
 - Probably want 3 slotting buttons? 
 	1 Based on player weighting(Slot the 20 highest weighted plays with a distribution of 2 tanks 4 healers 14 dps)
 	1 Based on splits for effective gearing(So average weighting score / 3 with an even distribution)
 	
-
-Next Steps - Deepseek Recommendation
-- Drag and drop functionality in the slotting tab to move players
-
