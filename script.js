@@ -602,6 +602,21 @@ async function fetchRaidData(accessToken) {
   return data;
 }
 
+async function fetchItemDetails(itemId, accessToken) {
+  const response = await fetch(`https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-us&locale=en_US`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch item details: ${response.status} ${response.statusText}`);
+  }
+
+  const itemDetails = await response.json();
+  return itemDetails;
+}
+
 // Function to fetch boss data for a raid
 async function fetchBosses(raidId, accessToken) {
   const response = await fetch(`https://us.api.blizzard.com/data/wow/raid/${raidId}?namespace=static-us&locale=en_US`, {
@@ -679,11 +694,22 @@ async function fetchAndSaveBossData() {
         }
 
         const lootData = await lootResponse.json();
-        console.log('Loot Data for Boss:', boss.name, lootData); // Log the loot data
+        console.log('Loot Data for Boss:', boss.name, lootData);
+
+        // Fetch item details for each loot item
+        const lootWithDetails = await Promise.all(
+          lootData.items.map(async (item) => {
+            const itemDetails = await fetchItemDetails(item.item.id, accessToken);
+            return {
+              ...item,
+              details: itemDetails, // Add item details to the loot object
+            };
+          })
+        );
 
         return {
           ...boss,
-          loot: lootData.items || [], // Add loot data to the boss object
+          loot: lootWithDetails, // Add loot data (with details) to the boss object
         };
       })
     );
@@ -733,15 +759,15 @@ function renderBossInfo() {
           <tr>
             <th>Loot</th>
             <th>Item Type</th>
-            <th>BiS For</th>
+            <th>Stats</th>
           </tr>
         </thead>
         <tbody>
           ${boss.loot.map((item) => `
             <tr>
-              <td>${item.item?.name || 'N/A'}</td>
-              <td>${item.item?.type || 'N/A'}</td>
-              <td>${item.bisFor?.join(', ') || 'N/A'}</td>
+              <td>${item.item.name}</td>
+              <td>${item.details?.item_class?.name || 'N/A'}</td>
+              <td>${item.details?.stats?.map(stat => `${stat.type}: ${stat.value}`).join(', ') || 'N/A'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -771,3 +797,5 @@ document.getElementById('fetch-boss-data-button').addEventListener('click', fetc
 document.addEventListener('DOMContentLoaded', () => {
   renderBossInfo();
 });
+
+
