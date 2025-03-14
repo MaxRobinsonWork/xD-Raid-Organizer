@@ -834,14 +834,14 @@ function getItemTypeDescription(itemDetails) {
       if (inventoryType === 'finger') {
         itemType = 'Ring';
       } else {
-        itemType = inventoryType;
+        itemType = inventoryTypeName; // Use inventory_type.name
       }
     } else if (inventoryType === 'cloak') {
       itemType = 'Cloak';
     } else if (itemSubclass === 'miscellaneous' && inventoryType === 'trinket') {
       itemType = 'Trinket';
     } else {
-      itemType = `${itemSubclass} ${inventoryType}`;
+      itemType = `${itemSubclass} ${inventoryTypeName}`; // Use inventory_type.name
     }
   }
   // Handle Reagents
