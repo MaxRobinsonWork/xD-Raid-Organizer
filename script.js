@@ -613,18 +613,6 @@ async function fetchBosses(raidId, accessToken) {
   return data.bosses;
 }
 
-// Function to fetch loot for a boss
-
-
-
-
-
-
-
-
-
-
-
 async function fetchAndSaveBossData() {
   try {
     // Step 1: Fetch access token
@@ -649,7 +637,6 @@ async function fetchAndSaveBossData() {
       },
     });
 
-    // Check if the response is OK
     if (!bossResponse.ok) {
       throw new Error(`Failed to fetch boss data: ${bossResponse.status} ${bossResponse.statusText}`);
     }
@@ -671,7 +658,6 @@ async function fetchAndSaveBossData() {
       },
     });
 
-    // Check if the response is OK
     if (!raidTierBossResponse.ok) {
       throw new Error(`Failed to fetch boss data for current raid tier: ${raidTierBossResponse.status} ${raidTierBossResponse.statusText}`);
     }
@@ -679,14 +665,36 @@ async function fetchAndSaveBossData() {
     const raidTierBossData = await raidTierBossResponse.json();
     console.log('Current Raid Tier Boss Data:', raidTierBossData);
 
-    // Step 7: Save boss data to localStorage
-    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(raidTierBossData));
-    console.log('Boss data saved to localStorage');
+    // Step 7: Fetch loot for each boss
+    const bossesWithLoot = await Promise.all(
+      raidTierBossData.encounters.map(async (boss) => {
+        const lootResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-encounter/${boss.id}?namespace=static-us&locale=en_US`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
 
-    // Step 8: Render the data
+        if (!lootResponse.ok) {
+          throw new Error(`Failed to fetch loot for boss ${boss.id}: ${lootResponse.status} ${lootResponse.statusText}`);
+        }
+
+        const lootData = await lootResponse.json();
+        return {
+          ...boss,
+          loot: lootData.items || [], // Add loot data to the boss object
+        };
+      })
+    );
+
+    // Step 8: Save boss data (with loot) to localStorage
+    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossesWithLoot));
+    console.log('Boss data (with loot) saved to localStorage');
+
+    // Step 9: Render the data
     renderBossInfo();
   } catch (error) {
     console.error('Error fetching boss data:', error);
+    alert(`Failed to fetch boss data: ${error.message}`);
   }
 }
 
@@ -694,19 +702,15 @@ function renderBossInfo() {
   const bossLootContainer = document.getElementById('boss-loot-container');
   bossLootContainer.innerHTML = ''; // Clear existing content
 
-  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || {};
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
 
-  // Check if bossData has an "encounters" property (where bosses are stored)
-  const bosses = bossData.encounters || [];
-  console.log('Bosses:', bosses);
-
-  if (bosses.length === 0) {
+  if (bossData.length === 0) {
     bossLootContainer.innerHTML = '<p>No boss data available.</p>';
     return;
   }
 
   // Render each boss
-  bosses.forEach(boss => {
+  bossData.forEach((boss) => {
     const bossSection = document.createElement('div');
     bossSection.className = 'boss-section';
 
@@ -720,7 +724,7 @@ function renderBossInfo() {
     const bossLoot = document.createElement('div');
     bossLoot.className = 'boss-loot';
 
-    if (boss.items && boss.items.length > 0) {
+    if (boss.loot && boss.loot.length > 0) {
       const table = document.createElement('table');
       table.innerHTML = `
         <thead>
@@ -731,11 +735,11 @@ function renderBossInfo() {
           </tr>
         </thead>
         <tbody>
-          ${boss.items.map(item => `
+          ${boss.loot.map((item) => `
             <tr>
               <td>${item.name}</td>
               <td>${item.type}</td>
-              <td>${item.bisFor.join(', ')}</td>
+              <td>${item.bisFor ? item.bisFor.join(', ') : 'N/A'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -750,7 +754,7 @@ function renderBossInfo() {
   });
 
   // Add event listeners for expand/collapse
-  document.querySelectorAll('.boss-header').forEach(header => {
+  document.querySelectorAll('.boss-header').forEach((header) => {
     header.addEventListener('click', () => {
       const bossSection = header.parentElement;
       bossSection.classList.toggle('expanded');
