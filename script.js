@@ -627,6 +627,16 @@ async function fetchItemDetails(itemId, accessToken) {
   return itemDetails;
 }
 
+async function fetchBosses(raidId, accessToken) {
+  const response = await fetch(`https://us.api.blizzard.com/data/wow/raid/${raidId}?namespace=static-us&locale=en_US`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.bosses;
+}
+
 // Function to fetch boss data for a raid
 async function fetchAndSaveBossData() {
   try {
