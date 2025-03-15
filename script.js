@@ -577,10 +577,6 @@ function capitalizeWords(str) {
     .join(' '); // Join the words back into a single string
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 // Blizzard API integration for Boss Info tab
 const BOSS_DATA_KEY = 'bossData';
 
@@ -614,9 +610,6 @@ async function fetchRaidData(accessToken) {
 }
 
 async function fetchItemDetails(itemId, accessToken) {
-  // Add a delay to avoid hitting the rate limit
-  await sleep(1000); // 1 second delay between requests
-
   const response = await fetch(`https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-us&locale=en_US`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -631,21 +624,17 @@ async function fetchItemDetails(itemId, accessToken) {
   return itemDetails;
 }
 
+// Function to fetch boss data for a raid
 async function fetchBosses(raidId, accessToken) {
   const response = await fetch(`https://us.api.blizzard.com/data/wow/raid/${raidId}?namespace=static-us&locale=en_US`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch boss data: ${response.status} ${response.statusText}`);
-  }
-
-  const bossData = await response.json();
-  return bossData.bosses;
+  const data = await response.json();
+  return data.bosses;
 }
-// Function to fetch boss data for a raid
+
 async function fetchAndSaveBossData() {
   try {
     // Step 1: Fetch access token
@@ -664,12 +653,43 @@ async function fetchAndSaveBossData() {
     console.log('Current Raid:', currentRaid);
 
     // Step 4: Fetch boss data for the current raid
-    const bosses = await fetchBosses(currentRaid.id, accessToken);
-    console.log('Bosses:', bosses);
+    const bossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-expansion/${currentRaid.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-    // Step 5: Fetch loot for each boss
+    if (!bossResponse.ok) {
+      throw new Error(`Failed to fetch boss data: ${bossResponse.status} ${bossResponse.statusText}`);
+    }
+
+    const bossData = await bossResponse.json();
+    console.log('Boss Data:', bossData);
+
+    // Step 5: Find the current raid tier (the last item in the raids array)
+    const currentRaidTier = bossData.raids[bossData.raids.length - 1];
+    if (!currentRaidTier) {
+      throw new Error('Current raid tier not found in boss data.');
+    }
+    console.log('Current Raid Tier:', currentRaidTier);
+
+    // Step 6: Fetch boss data for the current raid tier
+    const raidTierBossResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-instance/${currentRaidTier.id}?namespace=static-us&locale=en_US`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!raidTierBossResponse.ok) {
+      throw new Error(`Failed to fetch boss data for current raid tier: ${raidTierBossResponse.status} ${raidTierBossResponse.statusText}`);
+    }
+
+    const raidTierBossData = await raidTierBossResponse.json();
+    console.log('Current Raid Tier Boss Data:', raidTierBossData);
+
+    // Step 7: Fetch loot for each boss
     const bossesWithLoot = await Promise.all(
-      bosses.map(async (boss) => {
+      raidTierBossData.encounters.map(async (boss) => {
         const lootResponse = await fetch(`https://us.api.blizzard.com/data/wow/journal-encounter/${boss.id}?namespace=static-us&locale=en_US`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -686,37 +706,20 @@ async function fetchAndSaveBossData() {
         // Fetch item details for each loot item
         const lootWithDetails = await Promise.all(
           lootData.items.map(async (item) => {
-            try {
-              const itemDetails = await fetchItemDetails(item.item.id, accessToken);
-              return {
-                ...item,
-                details: itemDetails,
-              };
-            } catch (error) {
-              console.error(`Failed to fetch details for item ${item.item.id}:`, error);
-              return item; // Return the item without details if fetching fails
-            }
+            const itemDetails = await fetchItemDetails(item.item.id, accessToken);
+            return {
+              ...item,
+              details: itemDetails, // Add item details to the loot object
+            };
           })
         );
 
         return {
           ...boss,
-          loot: lootWithDetails,
+          loot: lootWithDetails, // Add loot data (with details) to the boss object
         };
       })
     );
-
-    // Step 6: Save boss data (with loot) to localStorage
-    localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossesWithLoot));
-    console.log('Boss data (with loot) saved to localStorage');
-
-    // Step 7: Render the data
-    renderBossInfo();
-  } catch (error) {
-    console.error('Error fetching boss data:', error);
-    alert(`Failed to fetch boss data: ${error.message}`);
-  }
-}
 
     // Step 8: Save boss data (with loot) to localStorage
     localStorage.setItem(BOSS_DATA_KEY, JSON.stringify(bossesWithLoot));
@@ -762,37 +765,24 @@ function renderBossInfo() {
         <thead>
           <tr>
             <th>Loot</th>
-            <th>Armor Type</th>
             <th>Item Type</th>
           </tr>
         </thead>
         <tbody>
-          ${boss.loot.map((item) => {
-            // Determine Armor Type and Item Type
-            let armorType = 'N/A';
-            let itemType = item.type || 'N/A';
-
-            if (item.item_class === 'Armor') {
-              const [type, slot] = item.type.split(' ');
-              armorType = type || 'N/A';
-              itemType = slot || 'N/A';
-            } else if (item.item_class === 'Weapon') {
-              armorType = 'Weapon';
-            } else if (
-              item.item_class === 'Miscellaneous' &&
-              (item.type === 'Trinket' || item.type === 'Ring' || item.type === 'Neck')
-            ) {
-              armorType = 'Jewelry';
-            }
-
-            return `
-              <tr>
-                <td>${item.name}</td>
-                <td>${armorType}</td>
-                <td>${itemType}</td>
-              </tr>
-            `;
-          }).join('')}
+          ${boss.loot
+            .map((item) => {
+              const itemType = getItemTypeDescription(item.details);
+              if (itemType === null) {
+                return ''; // Skip recipes
+              }
+              return `
+                <tr>
+                  <td>${item.item.name}</td>
+                  <td>${itemType}</td>
+                </tr>
+              `;
+            })
+            .join('')}
         </tbody>
       `;
       bossLoot.appendChild(table);
@@ -880,5 +870,4 @@ document.getElementById('fetch-boss-data-button').addEventListener('click', fetc
 document.addEventListener('DOMContentLoaded', () => {
   renderBossInfo();
 });
-
 
