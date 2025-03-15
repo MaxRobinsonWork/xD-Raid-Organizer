@@ -610,6 +610,9 @@ async function fetchRaidData(accessToken) {
 }
 
 async function fetchItemDetails(itemId, accessToken) {
+  // Add a delay to avoid hitting the rate limit
+  await sleep(1000); // 1 second delay between requests
+
   const response = await fetch(`https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-us&locale=en_US`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -625,16 +628,6 @@ async function fetchItemDetails(itemId, accessToken) {
 }
 
 // Function to fetch boss data for a raid
-async function fetchBosses(raidId, accessToken) {
-  const response = await fetch(`https://us.api.blizzard.com/data/wow/raid/${raidId}?namespace=static-us&locale=en_US`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const data = await response.json();
-  return data.bosses;
-}
-
 async function fetchAndSaveBossData() {
   try {
     // Step 1: Fetch access token
@@ -706,17 +699,22 @@ async function fetchAndSaveBossData() {
         // Fetch item details for each loot item
         const lootWithDetails = await Promise.all(
           lootData.items.map(async (item) => {
-            const itemDetails = await fetchItemDetails(item.item.id, accessToken);
-            return {
-              ...item,
-              details: itemDetails, // Add item details to the loot object
-            };
+            try {
+              const itemDetails = await fetchItemDetails(item.item.id, accessToken);
+              return {
+                ...item,
+                details: itemDetails,
+              };
+            } catch (error) {
+              console.error(`Failed to fetch details for item ${item.item.id}:`, error);
+              return item; // Return the item without details if fetching fails
+            }
           })
         );
 
         return {
           ...boss,
-          loot: lootWithDetails, // Add loot data (with details) to the boss object
+          loot: lootWithDetails,
         };
       })
     );
