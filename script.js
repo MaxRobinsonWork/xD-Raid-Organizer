@@ -765,24 +765,37 @@ function renderBossInfo() {
         <thead>
           <tr>
             <th>Loot</th>
+            <th>Armor Type</th>
             <th>Item Type</th>
           </tr>
         </thead>
         <tbody>
-          ${boss.loot
-            .map((item) => {
-              const itemType = getItemTypeDescription(item.details);
-              if (itemType === null) {
-                return ''; // Skip recipes
-              }
-              return `
-                <tr>
-                  <td>${item.item.name}</td>
-                  <td>${itemType}</td>
-                </tr>
-              `;
-            })
-            .join('')}
+          ${boss.loot.map((item) => {
+            // Determine Armor Type and Item Type
+            let armorType = 'N/A';
+            let itemType = item.type || 'N/A';
+
+            if (item.item_class === 'Armor') {
+              const [type, slot] = item.type.split(' ');
+              armorType = type || 'N/A';
+              itemType = slot || 'N/A';
+            } else if (item.item_class === 'Weapon') {
+              armorType = 'Weapon';
+            } else if (
+              item.item_class === 'Miscellaneous' &&
+              (item.type === 'Trinket' || item.type === 'Ring' || item.type === 'Neck')
+            ) {
+              armorType = 'Jewelry';
+            }
+
+            return `
+              <tr>
+                <td>${item.name}</td>
+                <td>${armorType}</td>
+                <td>${itemType}</td>
+              </tr>
+            `;
+          }).join('')}
         </tbody>
       `;
       bossLoot.appendChild(table);
