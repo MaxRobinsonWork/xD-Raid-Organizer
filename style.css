@@ -389,3 +389,22 @@ th {
 .boss-section.expanded .boss-loot {
   height: auto; /* Let the content determine the height */
 }
+/* Style for the Fetch Boss Data button */
+#fetch-boss-data-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#fetch-boss-data-button:hover {
+  background-color: #45a049;
+}
+
+/* Add some spacing around the button container */
+#boss-info > div {
+  margin-bottom: 20px;
+}
