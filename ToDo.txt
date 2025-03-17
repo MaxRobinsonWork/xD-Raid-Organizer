@@ -21,4 +21,4 @@ Slotting Tab
 - Probably want 3 slotting buttons? 
 	1 Based on player weighting(Slot the 20 highest weighted plays with a distribution of 2 tanks 4 healers 14 dps)
 	1 Based on splits for effective gearing(So average weighting score / 3 with an even distribution)
-	
+	1 Based on tier distribution and weighting? (This would work for heroic splits in prep for a mythic release)
