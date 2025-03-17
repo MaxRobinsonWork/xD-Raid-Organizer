@@ -923,18 +923,8 @@ function getItemTypeDescription(itemDetails) {
 
   // Handle Weapons
   if (itemClass === 'weapon') {
-    // Categorize weapons into One-Hands, Two-Hands, Off-Hand, and Shield
-    if (inventoryTypeName.includes('One-Hand')) {
-      itemType = 'One-Hand';
-    } else if (inventoryTypeName.includes('Two-Hand')) {
-      itemType = 'Two-Hand';
-    } else if (inventoryTypeName.includes('Off Hand')) {
-      itemType = 'Off-Hand';
-    } else if (itemSubclass === 'shield') {
-      itemType = 'Shield';
-    } else {
-      itemType = inventoryTypeName; // Fallback
-    }
+    // Display the item_subclass for weapons
+    itemType = itemSubclass;
   }
   // Handle Recipes (ignore them)
   else if (itemClass === 'recipe') {
@@ -966,7 +956,8 @@ function getItemTypeDescription(itemDetails) {
     } else if (inventoryTypeName === 'cloak') {
       itemType = 'Cloak';
     } else {
-      itemType = itemSubclass; // Use item_subclass (e.g., Plate, Cloth)
+      // For all other armor, use inventory_type: name
+      itemType = inventoryTypeName;
     }
   }
   // Handle Reagents
