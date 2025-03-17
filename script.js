@@ -863,18 +863,39 @@ function getBiSFor(itemDetails) {
 function getArmorType(itemDetails) {
   const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
   const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
-  const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
+  const inventoryTypeName = (itemDetails?.inventory_type?.name || 'Unknown').toLowerCase();
 
-  // Handle Trinkets and Rings
-  if (itemClass === 'armor' && itemSubclass === 'miscellaneous') {
-    if (inventoryType === 'trinket') {
-      return 'Trinket';
-    } else if (inventoryType === 'finger') {
-      return 'Ring';
-    }
+  // Rule 1: If the item_class is 'Weapon', use the inventory_type: name
+  if (itemClass === 'weapon') {
+    return capitalizeWords(inventoryTypeName);
   }
 
-  // Default to item subclass
+  // Rule 2: If the item_class is 'Miscellaneous' and the item_subclass is 'Junk', display "Tier Token"
+  if (itemClass === 'miscellaneous' && itemSubclass === 'junk') {
+    return 'Tier Token';
+  }
+
+  // Rule 3: If the item_class is 'Reagent' and the item_subclass is 'Context Token', display "Omni-Token"
+  if (itemClass === 'reagent' && itemSubclass === 'context token') {
+    return 'Omni-Token';
+  }
+
+  // Rule 4: If the item_class is 'Armor' and the item_subclass is 'Shield', display "Shield"
+  if (itemClass === 'armor' && itemSubclass === 'shield') {
+    return 'Shield';
+  }
+
+  // Rule 5: If the item_class is 'Armor' and the item_subclass is 'Miscellaneous', display the inventory_type: name
+  if (itemClass === 'armor' && itemSubclass === 'miscellaneous') {
+    return capitalizeWords(inventoryTypeName);
+  }
+
+  // Rule 6: If the item_class is 'Armor' and the item_subclass is anything else, display the item_subclass
+  if (itemClass === 'armor') {
+    return capitalizeWords(itemSubclass);
+  }
+
+  // Default case: Return the item_subclass
   return capitalizeWords(itemSubclass);
 }
 
