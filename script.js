@@ -768,6 +768,11 @@ function renderBossInfo() {
     return;
   }
 
+  // Get filter values
+  const itemTypeFilter = document.getElementById('item-type-filter').value.toLowerCase();
+  const bisFilter = document.getElementById('bis-filter').value.toLowerCase();
+  const searchQuery = document.getElementById('search-loot').value.toLowerCase();
+
   // Render each boss
   bossData.forEach((boss) => {
     const bossSection = document.createElement('div');
@@ -802,6 +807,15 @@ function renderBossInfo() {
               // Skip items with null itemType
               if (itemType === null) {
                 return '';
+              }
+
+              // Apply filters
+              if (
+                (itemTypeFilter && !itemType.toLowerCase().includes(itemTypeFilter)) ||
+                (bisFilter && !bisFor.toLowerCase().includes(bisFilter)) ||
+                (searchQuery && !item.item.name.toLowerCase().includes(searchQuery))
+              ) {
+                return ''; // Skip items that don't match the filters
               }
 
               return `
@@ -839,6 +853,11 @@ function getBiSFor(itemDetails) {
   // Example: If the item is a weapon, check its stats or type
   return 'All'; // Placeholder
 }
+
+// Add event listeners for filters and search
+document.getElementById('item-type-filter').addEventListener('change', renderBossInfo);
+document.getElementById('bis-filter').addEventListener('change', renderBossInfo);
+document.getElementById('search-loot').addEventListener('input', renderBossInfo);
 
 // Helper function to generate item type descriptions
 function getItemTypeDescription(itemDetails) {
