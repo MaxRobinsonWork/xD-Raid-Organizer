@@ -512,7 +512,7 @@ function switchTab(event) {
   if (targetTab === 'player-table') {
     renderPlayerTable(); // Re-render the player table
   } else if (targetTab === 'second-table') {
-    populateBossCategories(); // Re-render the boss assignments
+    populateSlottingTab(); // Re-render the slotting tab
   } else if (targetTab === 'boss-info') {
     renderBossInfo(); // Re-render the boss info
   }
@@ -524,57 +524,64 @@ document.querySelectorAll('.tab-button').forEach(button => {
 });
 
 // Function to populate boss categories with players
-function populateBossCategories() {
-  const bosses = document.querySelectorAll('.boss');
+function populateSlottingTab() {
+  const bossContainer = document.getElementById('boss-container');
+  bossContainer.innerHTML = ''; // Clear existing content
 
-  bosses.forEach(boss => {
-    const categories = boss.querySelector('.categories');
-    const meleeCategory = categories.children[0];
-    const rangedCategory = categories.children[1];
-    const healersCategory = categories.children[2];
-    const tanksCategory = categories.children[3];
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
 
-    // Clear existing content (only for this boss)
-    meleeCategory.innerHTML = 'Melee';
-    rangedCategory.innerHTML = 'Ranged';
-    healersCategory.innerHTML = 'Healers';
-    tanksCategory.innerHTML = 'Tanks';
+  if (bossData.length === 0) {
+    bossContainer.innerHTML = '<p>No boss data available.</p>';
+    return;
+  }
 
-    // Populate categories with players
-    players.forEach(player => {
-      const playerElement = document.createElement('div');
-      playerElement.textContent = player.name;
+  // Group bosses into rows of 4
+  for (let i = 0; i < bossData.length; i += 4) {
+    const bossRow = document.createElement('div');
+    bossRow.className = 'boss-row';
 
-      // Add both the player-assignment and class-specific background color classes
-      playerElement.className = `player-assignment ${player.class.toLowerCase().replace(' ', '-')}`;
+    // Add up to 4 bosses per row
+    for (let j = i; j < i + 4 && j < bossData.length; j++) {
+      const boss = bossData[j];
 
-      const playerClass = classSpecs[player.class];
-      const playerSpec = playerClass.specs.find(spec => spec.name === player.spec);
-      const playerRole = playerSpec ? playerSpec.role : 'Unknown';
+      const bossDiv = document.createElement('div');
+      bossDiv.className = 'boss';
 
-      switch (playerRole) {
-        case 'Melee':
-          meleeCategory.appendChild(playerElement);
-          break;
-        case 'Ranged':
-          rangedCategory.appendChild(playerElement);
-          break;
-        case 'Healer':
-          healersCategory.appendChild(playerElement);
-          break;
-        case 'Tank':
-          tanksCategory.appendChild(playerElement);
-          break;
-      }
-    });
-  });
-}
+      // Boss header
+      const bossHeader = document.createElement('h4');
+      bossHeader.textContent = boss.name;
+      bossDiv.appendChild(bossHeader);
 
-function capitalizeWords(str) {
-  return str
-    .split(' ') // Split the string into words
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
-    .join(' '); // Join the words back into a single string
+      // Categories (Melee, Ranged, Healers, Tanks)
+      const categoriesDiv = document.createElement('div');
+      categoriesDiv.className = 'categories';
+
+      const meleeCategory = document.createElement('div');
+      meleeCategory.className = 'category';
+      meleeCategory.textContent = 'Melee';
+      categoriesDiv.appendChild(meleeCategory);
+
+      const rangedCategory = document.createElement('div');
+      rangedCategory.className = 'category';
+      rangedCategory.textContent = 'Ranged';
+      categoriesDiv.appendChild(rangedCategory);
+
+      const healersCategory = document.createElement('div');
+      healersCategory.className = 'category';
+      healersCategory.textContent = 'Healers';
+      categoriesDiv.appendChild(healersCategory);
+
+      const tanksCategory = document.createElement('div');
+      tanksCategory.className = 'category';
+      tanksCategory.textContent = 'Tanks';
+      categoriesDiv.appendChild(tanksCategory);
+
+      bossDiv.appendChild(categoriesDiv);
+      bossRow.appendChild(bossDiv);
+    }
+
+    bossContainer.appendChild(bossRow);
+  }
 }
 
 // Blizzard API integration for Boss Info tab
@@ -592,6 +599,7 @@ async function getAccessToken() {
   return data.access_token;
 }
 
+// Function to fetch raid data
 async function fetchRaidData(accessToken) {
   const response = await fetch('https://us.api.blizzard.com/data/wow/journal-expansion/index?namespace=static-us&locale=en_US', {
     headers: {
@@ -599,17 +607,27 @@ async function fetchRaidData(accessToken) {
     },
   });
 
-  // Check if the response is OK (status code 200-299)
   if (!response.ok) {
     throw new Error(`Failed to fetch raid data: ${response.status} ${response.statusText}`);
   }
 
-  // Parse the response as JSON
   const data = await response.json();
   return data;
 }
 
+// Function to fetch item details with caching
 async function fetchItemDetails(itemId, accessToken) {
+  // Check if the item is already cached
+  const cacheKey = `item-${itemId}`;
+  const cachedItem = localStorage.getItem(cacheKey);
+
+  if (cachedItem) {
+    return JSON.parse(cachedItem); // Return cached data
+  }
+
+  // Add a delay to avoid rate limiting
+  await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+
   const response = await fetch(`https://us.api.blizzard.com/data/wow/item/${itemId}?namespace=static-us&locale=en_US`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -621,6 +639,10 @@ async function fetchItemDetails(itemId, accessToken) {
   }
 
   const itemDetails = await response.json();
+
+  // Cache the item details
+  localStorage.setItem(cacheKey, JSON.stringify(itemDetails));
+
   return itemDetails;
 }
 
@@ -635,6 +657,7 @@ async function fetchBosses(raidId, accessToken) {
   return data.bosses;
 }
 
+// Function to fetch and save boss data
 async function fetchAndSaveBossData() {
   try {
     // Step 1: Fetch access token
@@ -733,6 +756,7 @@ async function fetchAndSaveBossData() {
   }
 }
 
+// Function to render boss info
 function renderBossInfo() {
   const bossLootContainer = document.getElementById('boss-loot-container');
   bossLootContainer.innerHTML = ''; // Clear existing content
@@ -743,11 +767,6 @@ function renderBossInfo() {
     bossLootContainer.innerHTML = '<p>No boss data available.</p>';
     return;
   }
-
-  // Get filter values
-  const itemTypeFilter = document.getElementById('item-type-filter').value.toLowerCase();
-  const bisFilter = document.getElementById('bis-filter').value.toLowerCase();
-  const searchQuery = document.getElementById('search-loot').value.toLowerCase();
 
   // Render each boss
   bossData.forEach((boss) => {
@@ -779,11 +798,6 @@ function renderBossInfo() {
             .map((item) => {
               const itemType = getItemTypeDescription(item.details);
               const bisFor = getBiSFor(item.details); // Function to determine BiS For
-
-              // Skip items that don't match filters
-              if (itemTypeFilter && !itemType.toLowerCase().includes(itemTypeFilter)) return '';
-              if (bisFilter && !bisFor.toLowerCase().includes(bisFilter)) return '';
-              if (searchQuery && !item.item.name.toLowerCase().includes(searchQuery)) return '';
 
               return `
                 <tr>
@@ -821,16 +835,8 @@ function getBiSFor(itemDetails) {
   return 'All'; // Placeholder
 }
 
-// Add event listeners for filters and search
-document.getElementById('item-type-filter').addEventListener('change', renderBossInfo);
-document.getElementById('bis-filter').addEventListener('change', renderBossInfo);
-document.getElementById('search-loot').addEventListener('input', renderBossInfo);
-
 // Helper function to generate item type descriptions
 function getItemTypeDescription(itemDetails) {
-  // Log the full itemDetails object for debugging
-  console.log('Item Details:', itemDetails);
-
   const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
   const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
   const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
@@ -886,6 +892,14 @@ function getItemTypeDescription(itemDetails) {
   return capitalizeWords(itemType);
 }
 
+// Function to capitalize words
+function capitalizeWords(str) {
+  return str
+    .split(' ') // Split the string into words
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+    .join(' '); // Join the words back into a single string
+}
+
 // Add event listener to the fetch button
 document.getElementById('fetch-boss-data-button').addEventListener('click', fetchAndSaveBossData);
 
@@ -893,88 +907,3 @@ document.getElementById('fetch-boss-data-button').addEventListener('click', fetc
 document.addEventListener('DOMContentLoaded', () => {
   renderBossInfo();
 });
-
-// Function to populate the Slotting tab with bosses
-function populateSlottingTab() {
-  const bossContainer = document.getElementById('boss-container');
-  bossContainer.innerHTML = ''; // Clear existing content
-
-  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
-
-  if (bossData.length === 0) {
-    bossContainer.innerHTML = '<p>No boss data available.</p>';
-    return;
-  }
-
-  // Group bosses into rows of 4
-  for (let i = 0; i < bossData.length; i += 4) {
-    const bossRow = document.createElement('div');
-    bossRow.className = 'boss-row';
-
-    // Add up to 4 bosses per row
-    for (let j = i; j < i + 4 && j < bossData.length; j++) {
-      const boss = bossData[j];
-
-      const bossDiv = document.createElement('div');
-      bossDiv.className = 'boss';
-
-      // Boss header
-      const bossHeader = document.createElement('h4');
-      bossHeader.textContent = boss.name;
-      bossDiv.appendChild(bossHeader);
-
-      // Categories (Melee, Ranged, Healers, Tanks)
-      const categoriesDiv = document.createElement('div');
-      categoriesDiv.className = 'categories';
-
-      const meleeCategory = document.createElement('div');
-      meleeCategory.className = 'category';
-      meleeCategory.textContent = 'Melee';
-      categoriesDiv.appendChild(meleeCategory);
-
-      const rangedCategory = document.createElement('div');
-      rangedCategory.className = 'category';
-      rangedCategory.textContent = 'Ranged';
-      categoriesDiv.appendChild(rangedCategory);
-
-      const healersCategory = document.createElement('div');
-      healersCategory.className = 'category';
-      healersCategory.textContent = 'Healers';
-      categoriesDiv.appendChild(healersCategory);
-
-      const tanksCategory = document.createElement('div');
-      tanksCategory.className = 'category';
-      tanksCategory.textContent = 'Tanks';
-      categoriesDiv.appendChild(tanksCategory);
-
-      bossDiv.appendChild(categoriesDiv);
-      bossRow.appendChild(bossDiv);
-    }
-
-    bossContainer.appendChild(bossRow);
-  }
-}
-
-// Call this function when switching to the Slotting tab
-function switchTab(event) {
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  // Remove the "active" class from all tabs and buttons
-  tabButtons.forEach(button => button.classList.remove('active'));
-  tabContents.forEach(content => content.classList.remove('active'));
-
-  // Add the "active" class to the clicked tab and its corresponding content
-  const targetTab = event.target.getAttribute('data-tab');
-  document.getElementById(targetTab).classList.add('active');
-  event.target.classList.add('active');
-
-  // Re-render the content based on the selected tab
-  if (targetTab === 'player-table') {
-    renderPlayerTable(); // Re-render the player table
-  } else if (targetTab === 'second-table') {
-    populateSlottingTab(); // Re-render the slotting tab
-  } else if (targetTab === 'boss-info') {
-    renderBossInfo(); // Re-render the boss info
-  }
-}
