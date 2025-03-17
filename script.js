@@ -912,7 +912,6 @@ document.getElementById('search-loot').addEventListener('input', renderBossInfo)
 function getItemTypeDescription(itemDetails) {
   const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
   const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
-  const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
   const inventoryTypeName = (itemDetails?.inventory_type?.name || 'Unknown').toLowerCase();
 
   // Exclude Mounts
@@ -934,7 +933,7 @@ function getItemTypeDescription(itemDetails) {
     } else if (itemSubclass === 'shield') {
       itemType = 'Shield';
     } else {
-      itemType = `${inventoryTypeName} ${itemSubclass}`; // Fallback
+      itemType = inventoryTypeName; // Fallback
     }
   }
   // Handle Recipes (ignore them)
@@ -944,17 +943,17 @@ function getItemTypeDescription(itemDetails) {
   // Handle Armor
   else if (itemClass === 'armor') {
     if (itemSubclass === 'miscellaneous') {
-      if (inventoryType === 'finger') {
+      if (inventoryTypeName === 'finger') {
         itemType = 'Ring';
-      } else if (inventoryType === 'trinket') {
+      } else if (inventoryTypeName === 'trinket') {
         itemType = 'Trinket';
       } else {
         itemType = inventoryTypeName; // Use inventory_type.name
       }
-    } else if (inventoryType === 'cloak') {
+    } else if (inventoryTypeName === 'cloak') {
       itemType = 'Cloak';
     } else {
-      itemType = `${itemSubclass} ${inventoryTypeName}`; // Use inventory_type.name
+      itemType = itemSubclass; // Use item_subclass (e.g., Plate, Cloth)
     }
   }
   // Handle Reagents
@@ -969,7 +968,7 @@ function getItemTypeDescription(itemDetails) {
   }
   // Default case
   else {
-    itemType = `${itemSubclass}`;
+    itemType = itemSubclass;
   }
 
   // Capitalize the first letter of each word in the item type
