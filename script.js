@@ -861,8 +861,21 @@ function getBiSFor(itemDetails) {
 }
 
 function getArmorType(itemDetails) {
-  const armorType = itemDetails?.item_subclass?.name || 'Unknown';
-  return capitalizeWords(armorType);
+  const itemClass = (itemDetails?.item_class?.name || 'Unknown').toLowerCase();
+  const itemSubclass = (itemDetails?.item_subclass?.name || 'Unknown').toLowerCase();
+  const inventoryType = (itemDetails?.inventory_type?.type || 'Unknown').toLowerCase();
+
+  // Handle Trinkets and Rings
+  if (itemClass === 'armor' && itemSubclass === 'miscellaneous') {
+    if (inventoryType === 'trinket') {
+      return 'Trinket';
+    } else if (inventoryType === 'finger') {
+      return 'Ring';
+    }
+  }
+
+  // Default to item subclass
+  return capitalizeWords(itemSubclass);
 }
 
 // Add event listeners for filters and search
@@ -886,7 +899,18 @@ function getItemTypeDescription(itemDetails) {
 
   // Handle Weapons
   if (itemClass === 'weapon') {
-    itemType = `${inventoryTypeName} ${itemSubclass}`;
+    // Categorize weapons into One-Hands, Two-Hands, Off-Hand, and Shield
+    if (inventoryTypeName.includes('One-Hand')) {
+      itemType = 'One-Hand';
+    } else if (inventoryTypeName.includes('Two-Hand')) {
+      itemType = 'Two-Hand';
+    } else if (inventoryTypeName.includes('Off Hand')) {
+      itemType = 'Off-Hand';
+    } else if (itemSubclass === 'shield') {
+      itemType = 'Shield';
+    } else {
+      itemType = `${inventoryTypeName} ${itemSubclass}`; // Fallback
+    }
   }
   // Handle Recipes (ignore them)
   else if (itemClass === 'recipe') {
@@ -897,13 +921,13 @@ function getItemTypeDescription(itemDetails) {
     if (itemSubclass === 'miscellaneous') {
       if (inventoryType === 'finger') {
         itemType = 'Ring';
+      } else if (inventoryType === 'trinket') {
+        itemType = 'Trinket';
       } else {
         itemType = inventoryTypeName; // Use inventory_type.name
       }
     } else if (inventoryType === 'cloak') {
       itemType = 'Cloak';
-    } else if (itemSubclass === 'miscellaneous' && inventoryType === 'trinket') {
-      itemType = 'Trinket';
     } else {
       itemType = `${itemSubclass} ${inventoryTypeName}`; // Use inventory_type.name
     }
