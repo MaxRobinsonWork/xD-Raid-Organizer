@@ -946,7 +946,7 @@ function getItemTypeDescription(itemDetails) {
       case 'finger':
         itemType = 'Ring';
         break;
-      case 'cloak':
+      case 'back':
         itemType = 'Cloak';
         break;
       default:
