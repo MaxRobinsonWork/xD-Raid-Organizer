@@ -408,3 +408,62 @@ th {
 #boss-info > div {
   margin-bottom: 20px;
 }
+/* Boss Filters */
+#boss-filters {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#boss-filters label {
+  font-weight: bold;
+}
+
+#boss-filters select,
+#boss-filters input {
+  padding: 5px;
+  font-size: 14px;
+}
+
+/* Boss Loot Table */
+.boss-loot table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.boss-loot th,
+.boss-loot td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.boss-loot th {
+  background-color: #e0e0e0;
+}
+
+/* Fixed column widths */
+.boss-loot th:nth-child(1),
+.boss-loot td:nth-child(1) {
+  width: 40%; /* Loot column */
+}
+
+.boss-loot th:nth-child(2),
+.boss-loot td:nth-child(2) {
+  width: 20%; /* Item Type column */
+}
+
+.boss-loot th:nth-child(3),
+.boss-loot td:nth-child(3) {
+  width: 20%; /* BiS For column */
+}
+
+.boss-loot th:nth-child(4),
+.boss-loot td:nth-child(4) {
+  width: 20%; /* Additional column (if needed) */
+}
