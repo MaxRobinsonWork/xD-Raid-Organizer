@@ -894,3 +894,87 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBossInfo();
 });
 
+// Function to populate the Slotting tab with bosses
+function populateSlottingTab() {
+  const bossContainer = document.getElementById('boss-container');
+  bossContainer.innerHTML = ''; // Clear existing content
+
+  const bossData = JSON.parse(localStorage.getItem(BOSS_DATA_KEY)) || [];
+
+  if (bossData.length === 0) {
+    bossContainer.innerHTML = '<p>No boss data available.</p>';
+    return;
+  }
+
+  // Group bosses into rows of 4
+  for (let i = 0; i < bossData.length; i += 4) {
+    const bossRow = document.createElement('div');
+    bossRow.className = 'boss-row';
+
+    // Add up to 4 bosses per row
+    for (let j = i; j < i + 4 && j < bossData.length; j++) {
+      const boss = bossData[j];
+
+      const bossDiv = document.createElement('div');
+      bossDiv.className = 'boss';
+
+      // Boss header
+      const bossHeader = document.createElement('h4');
+      bossHeader.textContent = boss.name;
+      bossDiv.appendChild(bossHeader);
+
+      // Categories (Melee, Ranged, Healers, Tanks)
+      const categoriesDiv = document.createElement('div');
+      categoriesDiv.className = 'categories';
+
+      const meleeCategory = document.createElement('div');
+      meleeCategory.className = 'category';
+      meleeCategory.textContent = 'Melee';
+      categoriesDiv.appendChild(meleeCategory);
+
+      const rangedCategory = document.createElement('div');
+      rangedCategory.className = 'category';
+      rangedCategory.textContent = 'Ranged';
+      categoriesDiv.appendChild(rangedCategory);
+
+      const healersCategory = document.createElement('div');
+      healersCategory.className = 'category';
+      healersCategory.textContent = 'Healers';
+      categoriesDiv.appendChild(healersCategory);
+
+      const tanksCategory = document.createElement('div');
+      tanksCategory.className = 'category';
+      tanksCategory.textContent = 'Tanks';
+      categoriesDiv.appendChild(tanksCategory);
+
+      bossDiv.appendChild(categoriesDiv);
+      bossRow.appendChild(bossDiv);
+    }
+
+    bossContainer.appendChild(bossRow);
+  }
+}
+
+// Call this function when switching to the Slotting tab
+function switchTab(event) {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  // Remove the "active" class from all tabs and buttons
+  tabButtons.forEach(button => button.classList.remove('active'));
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  // Add the "active" class to the clicked tab and its corresponding content
+  const targetTab = event.target.getAttribute('data-tab');
+  document.getElementById(targetTab).classList.add('active');
+  event.target.classList.add('active');
+
+  // Re-render the content based on the selected tab
+  if (targetTab === 'player-table') {
+    renderPlayerTable(); // Re-render the player table
+  } else if (targetTab === 'second-table') {
+    populateSlottingTab(); // Re-render the slotting tab
+  } else if (targetTab === 'boss-info') {
+    renderBossInfo(); // Re-render the boss info
+  }
+}
