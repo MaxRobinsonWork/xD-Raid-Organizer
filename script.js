@@ -793,7 +793,8 @@ function renderBossInfo() {
       table.innerHTML = `
         <thead>
           <tr>
-            <th>Loot</th>
+            <th>Item Name</th>
+            <th>Armor Type</th>
             <th>Item Type</th>
             <th>BiS For</th>
           </tr>
@@ -802,7 +803,11 @@ function renderBossInfo() {
           ${boss.loot
             .map((item) => {
               const itemType = getItemTypeDescription(item.details);
+              const armorType = getArmorType(item.details); // Function to get armor type
               const bisFor = getBiSFor(item.details); // Function to determine BiS For
+
+              // Log item details for debugging
+              console.log('Item Details:', item.details);
 
               // Skip items with null itemType
               if (itemType === null) {
@@ -821,6 +826,7 @@ function renderBossInfo() {
               return `
                 <tr>
                   <td>${item.item.name}</td>
+                  <td>${armorType}</td>
                   <td>${itemType}</td>
                   <td>${bisFor}</td>
                 </tr>
@@ -852,6 +858,11 @@ function getBiSFor(itemDetails) {
   // Add logic to determine which classes/specs this item is BiS for
   // Example: If the item is a weapon, check its stats or type
   return 'All'; // Placeholder
+}
+
+function getArmorType(itemDetails) {
+  const armorType = itemDetails?.item_subclass?.name || 'Unknown';
+  return capitalizeWords(armorType);
 }
 
 // Add event listeners for filters and search
