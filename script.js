@@ -948,7 +948,20 @@ function getItemTypeDescription(itemDetails) {
       } else if (inventoryTypeName === 'trinket') {
         itemType = 'Trinket';
       } else {
-        itemType = inventoryTypeName; // Use inventory_type.name
+        // Special cases for inventoryTypeName
+        switch (inventoryTypeName) {
+          case 'feet':
+            itemType = 'Boots';
+            break;
+          case 'waist':
+            itemType = 'Belt';
+            break;
+          case 'wrist':
+            itemType = 'Bracers';
+            break;
+          default:
+            itemType = inventoryTypeName; // Use inventory_type.name
+        }
       }
     } else if (inventoryTypeName === 'cloak') {
       itemType = 'Cloak';
