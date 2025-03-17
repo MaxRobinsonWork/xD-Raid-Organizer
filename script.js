@@ -887,6 +887,10 @@ function getArmorType(itemDetails) {
 
   // Rule 5: If the item_class is 'Armor' and the item_subclass is 'Miscellaneous', display the inventory_type: name
   if (itemClass === 'armor' && itemSubclass === 'miscellaneous') {
+    // Special case: If inventoryTypeName is 'Finger', display 'Ring'
+    if (inventoryTypeName === 'finger') {
+      return 'Ring';
+    }
     return capitalizeWords(inventoryTypeName);
   }
 
