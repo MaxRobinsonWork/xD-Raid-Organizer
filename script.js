@@ -799,6 +799,11 @@ function renderBossInfo() {
               const itemType = getItemTypeDescription(item.details);
               const bisFor = getBiSFor(item.details); // Function to determine BiS For
 
+              // Skip items with null itemType
+              if (itemType === null) {
+                return '';
+              }
+
               return `
                 <tr>
                   <td>${item.item.name}</td>
