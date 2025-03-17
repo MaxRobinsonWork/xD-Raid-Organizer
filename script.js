@@ -932,32 +932,28 @@ function getItemTypeDescription(itemDetails) {
   }
   // Handle Armor
   else if (itemClass === 'armor') {
-    if (itemSubclass === 'miscellaneous') {
-      if (inventoryTypeName === 'finger') {
+    // Special cases for inventoryTypeName (applies to all armor items)
+    switch (inventoryTypeName) {
+      case 'feet':
+        itemType = 'Boots';
+        break;
+      case 'waist':
+        itemType = 'Belt';
+        break;
+      case 'wrist':
+        itemType = 'Bracers';
+        break;
+      case 'finger':
         itemType = 'Ring';
-      } else if (inventoryTypeName === 'trinket') {
+        break;
+      case 'trinket':
         itemType = 'Trinket';
-      } else {
-        // Special cases for inventoryTypeName
-        switch (inventoryTypeName) {
-          case 'feet':
-            itemType = 'Boots';
-            break;
-          case 'waist':
-            itemType = 'Belt';
-            break;
-          case 'wrist':
-            itemType = 'Bracers';
-            break;
-          default:
-            itemType = inventoryTypeName; // Use inventory_type.name
-        }
-      }
-    } else if (inventoryTypeName === 'cloak') {
-      itemType = 'Cloak';
-    } else {
-      // For all other armor, use inventory_type: name
-      itemType = inventoryTypeName;
+        break;
+      case 'cloak':
+        itemType = 'Cloak';
+        break;
+      default:
+        itemType = inventoryTypeName; // Use inventory_type.name
     }
   }
   // Handle Reagents
