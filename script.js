@@ -744,6 +744,11 @@ function renderBossInfo() {
     return;
   }
 
+  // Get filter values
+  const itemTypeFilter = document.getElementById('item-type-filter').value.toLowerCase();
+  const bisFilter = document.getElementById('bis-filter').value.toLowerCase();
+  const searchQuery = document.getElementById('search-loot').value.toLowerCase();
+
   // Render each boss
   bossData.forEach((boss) => {
     const bossSection = document.createElement('div');
@@ -766,19 +771,25 @@ function renderBossInfo() {
           <tr>
             <th>Loot</th>
             <th>Item Type</th>
+            <th>BiS For</th>
           </tr>
         </thead>
         <tbody>
           ${boss.loot
             .map((item) => {
               const itemType = getItemTypeDescription(item.details);
-              if (itemType === null) {
-                return ''; // Skip recipes
-              }
+              const bisFor = getBiSFor(item.details); // Function to determine BiS For
+
+              // Skip items that don't match filters
+              if (itemTypeFilter && !itemType.toLowerCase().includes(itemTypeFilter)) return '';
+              if (bisFilter && !bisFor.toLowerCase().includes(bisFilter)) return '';
+              if (searchQuery && !item.item.name.toLowerCase().includes(searchQuery)) return '';
+
               return `
                 <tr>
                   <td>${item.item.name}</td>
                   <td>${itemType}</td>
+                  <td>${bisFor}</td>
                 </tr>
               `;
             })
@@ -802,6 +813,18 @@ function renderBossInfo() {
     });
   });
 }
+
+// Helper function to determine BiS For
+function getBiSFor(itemDetails) {
+  // Add logic to determine which classes/specs this item is BiS for
+  // Example: If the item is a weapon, check its stats or type
+  return 'All'; // Placeholder
+}
+
+// Add event listeners for filters and search
+document.getElementById('item-type-filter').addEventListener('change', renderBossInfo);
+document.getElementById('bis-filter').addEventListener('change', renderBossInfo);
+document.getElementById('search-loot').addEventListener('input', renderBossInfo);
 
 // Helper function to generate item type descriptions
 function getItemTypeDescription(itemDetails) {
