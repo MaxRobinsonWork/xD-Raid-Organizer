@@ -946,6 +946,9 @@ function getItemTypeDescription(itemDetails) {
       case 'finger':
         itemType = 'Ring';
         break;
+      case 'cloak':
+        itemType = 'Cloak';
+        break;
       default:
         itemType = inventoryTypeName; // Use inventory_type.name
     }
